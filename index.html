@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#050505">
+    <title>Ponto Elite Pro - V11 Empregador</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600&display=swap');
+
+        :root {
+            --gold: #D4AF37;
+            --gold-grad: linear-gradient(135deg, #f9e498 0%, #D4AF37 50%, #b8860b 100%);
+            --bg: #050505;
+            --card: #111111;
+            --status-red: #ff3b30;
+            --status-green: #4cd964;
+            --status-orange: #ff9500;
+        }
+
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg); color: #fff; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding-bottom: 50px; overflow-x: hidden; }
+        
+        .status-bar { width: 100%; padding: 12px 0; display: flex; justify-content: center; align-items: center; gap: 10px; background: #000; border-bottom: 1px solid #222; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; box-shadow: 0 0 10px currentColor; }
+
+        .header h1 { font-family: 'Orbitron', sans-serif; background: var(--gold-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 22px; margin: 20px 0 5px 0; }
+
+        .clock-box { text-align: center; margin: 15px 0; padding: 10px 25px; background: rgba(212, 175, 55, 0.05); border-radius: 50px; border: 1px solid rgba(212, 175, 55, 0.2); }
+        #clock { font-family: 'Orbitron', sans-serif; font-size: 32px; color: var(--gold); line-height: 1; }
+        #date-display { font-size: 10px; color: #666; margin-top: 5px; text-transform: uppercase; }
+
+        .main-container { width: 92%; max-width: 400px; background: var(--card); padding: 25px; border-radius: 28px; border: 1px solid #222; box-shadow: 0 25px 50px rgba(0,0,0,0.8); box-sizing: border-box; }
+
+        .btn { width: 100%; padding: 18px; margin: 10px 0; border: none; border-radius: 16px; font-weight: 700; text-transform: uppercase; cursor: pointer; transition: 0.3s; font-size: 12px; display: flex; align-items: center; justify-content: center; gap: 10px; box-sizing: border-box; }
+        .btn-gold { background: var(--gold-grad); color: #000; }
+        .btn-outline { background: transparent; border: 1px solid #333; color: #aaa; }
+        .btn-danger { background: #200; color: #ff3b30; border: 1px solid #400; font-size: 11px; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 1000; overflow-y: auto; padding: 20px 0; }
+        .modal-content { background: #0f0f0f; width: 95%; max-width: 450px; margin: auto; padding: 25px; border-radius: 24px; border: 1px solid #333; box-sizing: border-box; }
+        
+        label { color: var(--gold); font-size: 10px; font-weight: 700; display: block; margin-top: 15px; text-transform: uppercase; }
+        input { width: 100%; padding: 14px; margin-top: 5px; background: #1a1a1a; border: 1px solid #333; border-radius: 10px; color: #fff; font-size: 14px; box-sizing: border-box; }
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .day-item { font-size: 10px; padding: 10px 5px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; text-align: center; cursor: pointer; color: #666; }
+        .day-item.active { background: var(--gold-grad); color: #000; font-weight: bold; }
+        .days-selector { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
+
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 11px; }
+        .admin-table th { color: var(--gold); text-align: left; padding: 8px; border-bottom: 1px solid #333; }
+        .admin-table td { padding: 8px; border-bottom: 1px solid #222; }
+
+        .preview-file { font-size: 11px; color: var(--status-green); margin-top: 10px; display: none; }
+        .btn-empregador { background: transparent; border: none; color: #222; font-size: 10px; margin-top: 50px; cursor: pointer; width: 100%; }
+    </style>
+</head>
+<body>
+
+    <div class="status-bar">
+        <div class="dot" id="status-dot"></div>
+        <span id="status-text">...</span>
+    </div>
+
+    <div class="header"><h1>PONTO ELITE PRO</h1></div>
+
+    <div class="clock-box">
+        <div id="clock">00:00:00</div>
+        <div id="date-display">...</div>
+    </div>
+
+    <div class="main-container">
+        <button class="btn btn-gold" id="btn-ponto" onclick="registrarPonto()">Bater Ponto Agora</button>
+        <button class="btn btn-outline" style="color: #5af;" onclick="abrirModalRetro()">✎ Lançamento Retroativo</button>
+        <button class="btn btn-outline" onclick="abrirModalVale()">💰 Registrar Vale / Recebido</button>
+        
+        <div style="display: flex; gap: 10px;">
+            <button class="btn btn-outline" style="flex:1" onclick="gerarPDF()">📄 Ver Relatório</button>
+            <button class="btn btn-outline" style="flex:1" onclick="abrirConfig()">⚙ Ajustes</button>
+        </div>
+        
+        <button class="btn btn-danger" onclick="abrirModalLimpeza()">🗑 Zerar Recebidos (Funcionário)</button>
+    </div>
+
+    <button class="btn-empregador" onclick="acessoEmpregador()">[ Acesso Empregador ]</button>
+
+    <!-- MODAL EMPREGADOR -->
+    <div id="modal-empregador" class="modal">
+        <div class="modal-content">
+            <h2 style="color: var(--gold); margin-top: 0;">Painel de Auditoria</h2>
+            
+            <h3 style="color: var(--gold); font-size: 14px;">Horários Registrados</h3>
+            <div style="max-height: 150px; overflow-y: auto; background: #111; border-radius: 10px;">
+                <table class="admin-table" id="table-regs">
+                    <thead><tr><th>Data</th><th>Hora</th><th>Ação</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <h3 style="color: var(--gold); font-size: 14px; margin-top: 20px;">Vales e Anexos</h3>
+            <div style="max-height: 150px; overflow-y: auto; background: #111; border-radius: 10px;">
+                <table class="admin-table" id="table-vales">
+                    <thead><tr><th>Data</th><th>Valor</th><th>Anexo</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <button class="btn btn-gold" style="margin-top:20px" onclick="gerarPDF()">Baixar Comprovante Completo</button>
+            <button class="btn btn-outline" style="margin-top:10px" onclick="fecharModais()">Sair</button>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIG -->
+    <div id="modal-config" class="modal">
+        <div class="modal-content">
+            <h2 style="color: var(--gold); margin-top: 0;">Ajustes de Horário</h2>
+            <label>Dias de Trabalho</label>
+            <div class="days-selector" id="workdays">
+                <div class="day-item" data-day="1">SEG</div><div class="day-item" data-day="2">TER</div>
+                <div class="day-item" data-day="3">QUA</div><div class="day-item" data-day="4">QUI</div>
+                <div class="day-item" data-day="5">SEX</div><div class="day-item" data-day="6">SAB</div>
+                <div class="day-item" data-day="0">DOM</div>
+            </div>
+            <label>Nome Completo</label><input type="text" id="cfg-nome">
+            <label>Empresa</label><input type="text" id="cfg-empresa">
+            <label>Valor Diária (R$)</label><input type="number" id="cfg-diaria">
+            <label style="color: #5af;">Seus Horários de Contrato (Para o Alarme)</label>
+            <div class="grid-2">
+                <input type="time" id="cfg-h1" title="Entrada">
+                <input type="time" id="cfg-h2" title="Saída Almoço">
+                <input type="time" id="cfg-h3" title="Volta Almoço">
+                <input type="time" id="cfg-h4" title="Saída Final">
+            </div>
+            <button class="btn btn-gold" style="margin-top:20px" onclick="salvarConfig()">Salvar e Ativar Alarmes</button>
+            <button class="btn btn-outline" onclick="fecharModais()">Sair</button>
+        </div>
+    </div>
+
+    <!-- MODAL RETROATIVO -->
+    <div id="modal-retro" class="modal">
+        <div class="modal-content">
+            <h2 style="color: #5af; margin-top: 0;">Lançamento Retroativo</h2>
+            <label>Data</label><input type="date" id="retro-data">
+            <div class="grid-2">
+                <div><label>Entrada</label><input type="time" id="retro-h1"></div>
+                <div><label>S. Almoço</label><input type="time" id="retro-h2"></div>
+                <div><label>V. Almoço</label><input type="time" id="retro-h3"></div>
+                <div><label>Saída Final</label><input type="time" id="retro-h4"></div>
+            </div>
+            <label style="color: #f55;">Para finalizar, procure o empregador</label>
+            <input type="password" id="retro-pass" placeholder="Aguardando autorização...">
+            <button class="btn btn-gold" style="margin-top:25px" onclick="salvarRetro()">Gravar Dia Completo</button>
+            <button class="btn btn-outline" onclick="fecharModais()">Sair</button>
+        </div>
+    </div>
+
+    <!-- MODAL VALE -->
+    <div id="modal-vale" class="modal">
+        <div class="modal-content">
+            <h2 style="color: var(--gold); margin-top: 0;">Novo Vale / Recebido</h2>
+            <label>Valor (R$)</label><input type="number" id="vale-valor" placeholder="0.00">
+            <label>Data</label><input type="date" id="vale-data">
+            <label>Anexar Comprovante (Qualquer formato)</label>
+            <input type="file" id="vale-file" onchange="tratarArquivo(this)">
+            <div id="file-ready" class="preview-file">✔ Arquivo anexado com sucesso!</div>
+            <button class="btn btn-gold" style="margin-top:25px" onclick="salvarVale()">Salvar Vale</button>
+            <button class="btn btn-outline" onclick="fecharModais()">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- MODAL LIMPEZA -->
+    <div id="modal-limpeza" class="modal">
+        <div class="modal-content">
+            <h2 style="color: #ff3b30; margin-top: 0;">Zerar Período</h2>
+            <p style="font-size: 11px; color: #888;">Esta função apaga os dados antigos que você já recebeu.</p>
+            <label>Apagar tudo do dia selecionado para trás:</label>
+            <input type="date" id="limpar-data">
+            <button class="btn btn-gold" style="background: #400; color: #fff; margin-top:20px;" onclick="executarLimpeza()">Confirmar Limpeza</button>
+            <button class="btn btn-outline" onclick="fecharModais()">Voltar</button>
+        </div>
+    </div>
+
+    <script>
+        const KEY = "ELITE_PRO_V11";
+        let tempFile = "";
+        let audioCtx = null;
+
+        // Relógio e Monitor de Alarmes (1 min antes)
+        setInterval(() => {
+            const agora = new Date();
+            document.getElementById('clock').innerText = agora.toLocaleTimeString('pt-BR');
+            document.getElementById('date-display').innerText = agora.toLocaleDateString('pt-BR', {weekday:'long', day:'numeric', month:'long'}).toUpperCase();
+            verificarAvisoAntecipado(agora);
+        }, 1000);
+
+        function playBeep() {
+            if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.type = 'sine'; osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+        }
+
+        function verificarAvisoAntecipado(agora) {
+            const cfg = JSON.parse(localStorage.getItem(KEY + "_CFG"));
+            if (!cfg || !cfg.diasTrabalho.includes(agora.getDay())) return;
+
+            const hm = agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+            const proxMinuto = new Date(agora.getTime() + 60000).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+            
+            const horarios = [cfg.h1, cfg.h2, cfg.h3, cfg.h4];
+
+            // Avisar 1 minuto antes
+            if (horarios.includes(proxMinuto) && agora.getSeconds() === 0) {
+                playBeep();
+                if (Notification.permission === "granted") {
+                    new Notification("AVISO DE PONTO", { body: "Falta 1 minuto para o seu horário!", icon: "https://cdn-icons-png.flaticon.com/512/2681/2681868.png" });
+                }
+            }
+        }
+
+        function getDB(n) { return JSON.parse(localStorage.getItem(KEY + "_" + n) || "[]"); }
+        function setDB(n, d) { localStorage.setItem(KEY + "_" + n, JSON.stringify(d)); }
+
+        function abrirConfig() { document.getElementById('modal-config').style.display='block'; carregarConfig(); }
+        function abrirModalRetro() { document.getElementById('modal-retro').style.display='block'; document.getElementById('retro-data').valueAsDate = new Date(); }
+        function abrirModalVale() { document.getElementById('modal-vale').style.display='block'; document.getElementById('vale-data').valueAsDate = new Date(); }
+        function abrirModalLimpeza() { document.getElementById('modal-limpeza').style.display='block'; }
+        function fecharModais() { 
+            document.querySelectorAll('.modal').forEach(m => m.style.display='none'); 
+            tempFile = ""; 
+            document.getElementById('file-ready').style.display='none';
+        }
+
+        function registrarPonto() {
+            const agora = new Date();
+            const data = agora.toLocaleDateString('sv-SE');
+            const hora = agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+            const r = getDB("REGS");
+            r.push({ data, hora, ts: agora.getTime() });
+            setDB("REGS", r);
+            alert("Ponto batido com sucesso!");
+            atualizarStatus();
+        }
+
+        function tratarArquivo(i) {
+            const file = i.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                tempFile = e.target.result;
+                document.getElementById('file-ready').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function salvarVale() {
+            const v = document.getElementById('vale-valor').value;
+            const d = document.getElementById('vale-data').value;
+            if(!v || !d) return alert("Preencha valor e data!");
+            const vs = getDB("VALES");
+            vs.push({ valor: parseFloat(v), data: d, anexo: tempFile });
+            setDB("VALES", vs);
+            alert("Vale registrado!");
+            fecharModais();
+        }
+
+        function salvarRetro() {
+            if(document.getElementById('retro-pass').value !== "1801") return alert("Autorização negada!");
+            const data = document.getElementById('retro-data').value;
+            const hrs = [document.getElementById('retro-h1').value, document.getElementById('retro-h2').value, document.getElementById('retro-h3').value, document.getElementById('retro-h4').value];
+            const r = getDB("REGS");
+            hrs.forEach(h => { if(h) r.push({ data, hora: h, ts: new Date(data+"T"+h).getTime() }); });
+            setDB("REGS", r);
+            alert("Dia lançado com sucesso!");
+            fecharModais();
+            atualizarStatus();
+        }
+
+        function acessoEmpregador() {
+            if(prompt("Senha do Empregador:") === "1801") {
+                document.getElementById('modal-empregador').style.display = 'block';
+                renderAdmin();
+            } else alert("Acesso restrito.");
+        }
+
+        function renderAdmin() {
+            const regs = getDB("REGS").sort((a,b) => b.ts - a.ts);
+            const vales = getDB("VALES");
+            document.querySelector('#table-regs tbody').innerHTML = regs.map((r, i) => `
+                <tr><td>${r.data}</td><td>${r.hora}</td><td style="color:red" onclick="delReg(${i})">Excluir</td></tr>
+            `).join('');
+            document.querySelector('#table-vales tbody').innerHTML = vales.map(v => `
+                <tr><td>${v.data}</td><td>R$ ${v.valor.toFixed(2)}</td><td>${v.anexo ? 'Sim' : 'Não'}</td></tr>
+            `).join('');
+        }
+
+        function delReg(i) {
+            const r = getDB("REGS"); r.splice(i, 1); setDB("REGS", r); renderAdmin(); atualizarStatus();
+        }
+
+        function executarLimpeza() {
+            const dc = document.getElementById('limpar-data').value;
+            if(!dc) return alert("Selecione a data!");
+            if(confirm("Deseja apagar o histórico anterior a " + dc + "?")) {
+                setDB("REGS", getDB("REGS").filter(r => r.data > dc));
+                setDB("VALES", getDB("VALES").filter(v => v.data > dc));
+                alert("Período zerado!");
+                atualizarStatus();
+                fecharModais();
+            }
+        }
+
+        function salvarConfig() {
+            const dias = []; document.querySelectorAll('.day-item.active').forEach(el => dias.push(parseInt(el.dataset.day)));
+            const d = {
+                nome: document.getElementById('cfg-nome').value,
+                empresa: document.getElementById('cfg-empresa').value,
+                diaria: document.getElementById('cfg-diaria').value,
+                h1: document.getElementById('cfg-h1').value, h2: document.getElementById('cfg-h2').value,
+                h3: document.getElementById('cfg-h3').value, h4: document.getElementById('cfg-h4').value,
+                diasTrabalho: dias
+            };
+            localStorage.setItem(KEY + "_CFG", JSON.stringify(d));
+            if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            playBeep();
+            Notification.requestPermission();
+            alert("Configurações salvas e alarmes ativos!");
+            fecharModais();
+            location.reload();
+        }
+
+        function carregarConfig() {
+            const c = JSON.parse(localStorage.getItem(KEY + "_CFG"));
+            if(c) {
+                document.getElementById('cfg-nome').value = c.nome||"";
+                document.getElementById('cfg-empresa').value = c.empresa||"";
+                document.getElementById('cfg-diaria').value = c.diaria||"";
+                document.getElementById('cfg-h1').value = c.h1||""; document.getElementById('cfg-h2').value = c.h2||"";
+                document.getElementById('cfg-h3').value = c.h3||""; document.getElementById('cfg-h4').value = c.h4||"";
+                document.querySelectorAll('.day-item').forEach(el => el.classList.toggle('active', c.diasTrabalho.includes(parseInt(el.dataset.day))));
+            }
+        }
+
+        function atualizarStatus() {
+            const regs = getDB("REGS");
+            const hoje = new Date().toLocaleDateString('sv-SE');
+            const bat = regs.filter(r => r.data === hoje).length;
+            const dot = document.getElementById('status-dot'), txt = document.getElementById('status-text'), btn = document.getElementById('btn-ponto');
+            if(bat === 0) s("#ff3b30", "Aguardando Entrada", "Bater Entrada");
+            else if(bat === 1) s("#4cd964", "Trabalhando", "S. Almoço");
+            else if(bat === 2) s("#ff9500", "Em Almoço", "V. Almoço");
+            else if(bat === 3) s("#4cd964", "Trabalhando", "Saída Final");
+            else { s("#555", "Finalizado", "Expediente Encerrado"); btn.disabled = true; }
+            function s(c, t, b) { if(dot){dot.style.backgroundColor = c; txt.style.color = c; txt.innerText = t;} if(btn){btn.innerText = b; btn.disabled = false;} }
+        }
+
+        function toMin(h) { if(!h) return 0; const [hr, mn] = h.split(':').map(Number); return hr * 60 + mn; }
+
+        async function gerarPDF() {
+            const { jsPDF } = window.jspdf; const doc = new jsPDF();
+            const cfg = JSON.parse(localStorage.getItem(KEY + "_CFG")); if(!cfg) return alert("Configure os Ajustes!");
+            const cMin = (toMin(cfg.h2) - toMin(cfg.h1)) + (toMin(cfg.h4) - toMin(cfg.h3));
+            
+            doc.setFontSize(16); doc.setTextColor(184, 134, 11);
+            doc.text("COMPROVANTE DE PONTO E VALES", 105, 20, {align:'center'});
+            doc.setFontSize(10); doc.setTextColor(0);
+            doc.text(`NOME: ${cfg.nome.toUpperCase()} | EMPRESA: ${cfg.empresa.toUpperCase()}`, 14, 30);
+
+            const regs = getDB("REGS"); const diasAg = {};
+            regs.sort((a,b)=>a.ts-b.ts).forEach(r => { if(!diasAg[r.data]) diasAg[r.data] = []; if(diasAg[r.data].length < 4) diasAg[r.data].push(r.hora); });
+
+            let tExtra = 0, tDias = 0;
+            const rows = Object.keys(diasAg).map(d => {
+                const p = diasAg[d]; tDias++;
+                let trab = 0;
+                if(p.length >= 2) trab += (toMin(p[1]) - toMin(p[0]));
+                if(p.length >= 4) trab += (toMin(p[3]) - toMin(p[2]));
+                const ex = trab > cMin ? trab - cMin : 0; tExtra += ex;
+                return [d.split('-').reverse().join('/'), p[0]||'-', p[1]||'-', p[2]||'-', p[3]||'-', (ex/60).toFixed(2)+'h'];
+            });
+
+            doc.autoTable({ startY: 40, head: [['Data', 'Ent.', 'Alm.S', 'Alm.V', 'Saí.', 'Extra']], body: rows, headStyles: {fillColor:[184, 134, 11]} });
+
+            const vales = getDB("VALES"); let totalV = 0;
+            const rowsV = vales.map(v => { totalV += v.valor; return [v.data.split('-').reverse().join('/'), `R$ ${v.valor.toFixed(2)}`]; });
+            doc.autoTable({ startY: doc.lastAutoTable.finalY + 10, head: [['Data Vale', 'Valor']], body: rowsV, headStyles: {fillColor:[50, 50, 50]} });
+
+            const vHora = parseFloat(cfg.diaria) / (cMin / 60 || 8);
+            const vExtra = (tExtra / 60) * vHora;
+            const fY = doc.lastAutoTable.finalY + 15;
+            doc.text(`(+) Salário (${tDias} dias): R$ ${(tDias * cfg.diaria).toFixed(2)}`, 14, fY);
+            doc.text(`(+) Horas Extras: R$ ${vExtra.toFixed(2)}`, 14, fY + 7);
+            doc.text(`(-) Total Vales: R$ ${totalV.toFixed(2)}`, 14, fY + 14);
+            doc.setFontSize(12); doc.text(`SALDO FINAL: R$ ${( (tDias * cfg.diaria) + vExtra - totalV ).toFixed(2)}`, 14, fY + 25);
+
+            // Anexos
+            const comAnexo = vales.filter(v => v.anexo && v.anexo.includes('image'));
+            if(comAnexo.length > 0) {
+                doc.addPage();
+                doc.text("ANEXOS DE COMPROVANTES", 105, 20, {align:'center'});
+                let py = 30;
+                comAnexo.forEach(v => {
+                    if(py > 230) { doc.addPage(); py = 20; }
+                    doc.setFontSize(8); doc.text(`Vale R$ ${v.valor.toFixed(2)} em ${v.data}`, 14, py);
+                    doc.addImage(v.anexo, 'JPEG', 14, py+2, 50, 40);
+                    py += 55;
+                });
+            }
+
+            doc.save(`Relatorio_Ponto_Elite.pdf`);
+        }
+
+        document.querySelectorAll('.day-item').forEach(item => { item.onclick = () => item.classList.toggle('active'); });
+        window.onload = atualizarStatus;
+    </script>
+</body>
+</html>
