@@ -1,16 +1,15 @@
 {
   "name": "Ponto Elite Pro",
-  "short_name": "Ponto Elite",
+  "short_name": "PontoElite",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#050505",
-  "theme_color": "#D4AF37",
+  "theme_color": "#050505",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/2681/2681868.png",
+      "src": "https://cdn-icons-png.flaticon.com/512/552/552791.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     }
   ]
 }
