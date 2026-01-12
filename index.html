@@ -15,16 +15,17 @@
         :root { --gold: #D4AF37; --gold-grad: linear-gradient(135deg, #f9e498 0%, #D4AF37 50%, #b8860b 100%); --bg: #050505; }
         body { font-family: 'Poppins', sans-serif; background-color: var(--bg); color: #fff; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding-bottom: 50px; }
         .status-bar { width: 100%; padding: 12px 0; display: flex; justify-content: center; align-items: center; gap: 10px; background: #000; border-bottom: 1px solid #222; font-size: 11px; font-weight: 700; }
-        .dot { width: 10px; height: 10px; border-radius: 50%; box-shadow: 0 0 10px currentColor; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; transition: 0.3s; }
         .header h1 { font-family: 'Orbitron', sans-serif; background: var(--gold-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 24px; margin: 20px 0; }
         .clock-box { text-align: center; margin-bottom: 20px; padding: 15px 40px; background: rgba(212, 175, 55, 0.1); border-radius: 50px; border: 1px solid var(--gold); }
-        #clock { font-family: 'Orbitron', sans-serif; font-size: 36px; color: var(--gold); }
-        .main-container { width: 92%; max-width: 400px; background: #111; padding: 25px; border-radius: 28px; border: 1px solid #222; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
-        .btn { width: 100%; padding: 18px; margin: 8px 0; border: none; border-radius: 16px; font-weight: 700; text-transform: uppercase; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; color: #fff; }
+        #clock { font-family: 'Orbitron', sans-serif; font-size: 32px; color: var(--gold); }
+        .main-container { width: 92%; max-width: 400px; background: #111; padding: 25px; border-radius: 28px; border: 1px solid #222; box-shadow: 0 20px 40px rgba(0,0,0,0.5); box-sizing: border-box; }
+        .btn { width: 100%; padding: 18px; margin: 8px 0; border: none; border-radius: 16px; font-weight: 700; text-transform: uppercase; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; color: #fff; transition: 0.2s; }
+        .btn:active { transform: scale(0.98); }
         .btn-gold { background: var(--gold-grad); color: #000; }
         .btn-outline { background: transparent; border: 1px solid #333; color: #aaa; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; overflow-y: auto; padding-top: 20px; }
-        .modal-content { background: #0f0f0f; width: 90%; max-width: 400px; margin: auto; padding: 25px; border-radius: 24px; border: 1px solid #333; }
+        .modal-content { background: #0f0f0f; width: 90%; max-width: 400px; margin: auto; padding: 25px; border-radius: 24px; border: 1px solid #333; box-sizing: border-box; }
         label { color: var(--gold); font-size: 10px; font-weight: 700; display: block; margin-top: 15px; }
         input { width: 100%; padding: 14px; margin-top: 5px; background: #1a1a1a; border: 1px solid #333; border-radius: 10px; color: #fff; box-sizing: border-box; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -36,7 +37,7 @@
 
     <div class="status-bar">
         <div class="dot" id="status-dot"></div>
-        <span id="status-text">...</span>
+        <span id="status-text">CARREGANDO...</span>
     </div>
 
     <div class="header"><h1>PONTO ELITE PRO</h1></div>
@@ -44,17 +45,17 @@
     <div class="clock-box"><div id="clock">00:00:00</div></div>
 
     <div class="main-container">
-        <button class="btn btn-gold" id="btn-ponto" onclick="registrarPonto()">Bater Ponto</button>
+        <button class="btn btn-gold" id="btn-ponto" onclick="registrarPonto()">Bater Ponto Agora</button>
         <button class="btn btn-outline" style="color:#5af" onclick="abrirModal('modal-retro')">✎ Lançamento Retroativo</button>
         <button class="btn btn-outline" onclick="abrirModal('modal-vale')">💰 Registrar Vale</button>
         <div class="grid-2">
-            <button class="btn btn-outline" onclick="gerarPDF()">📄 PDF</button>
+            <button class="btn btn-outline" onclick="gerarPDF()">📄 Gerar PDF</button>
             <button class="btn btn-outline" onclick="abrirModal('modal-config')">⚙ Ajustes</button>
         </div>
-        <button class="btn btn-outline" style="color: #ff3b30; border-color: #400;" onclick="limparTudo()">🗑 Zerar Sistema</button>
+        <button class="btn btn-outline" style="color: #ff3b30; border-color: #400; margin-top: 20px;" onclick="limparTudo()">🗑 Reiniciar Sistema</button>
     </div>
 
-    <!-- MODAL AJUSTES (PERSISTENTE) -->
+    <!-- MODAL AJUSTES -->
     <div id="modal-config" class="modal">
         <div class="modal-content">
             <h2 style="color: var(--gold);">Ajustes Contratuais</h2>
@@ -66,29 +67,29 @@
                 <div class="day-item" data-day="0">DOM</div>
             </div>
             <label>Nome Completo</label><input type="text" id="cfg-nome">
-            <label>WhatsApp do Patrão (com DDD)</label><input type="number" id="cfg-zap" placeholder="5511999999999">
+            <label>WhatsApp Destino (com DDD)</label><input type="number" id="cfg-zap" placeholder="5511999999999">
             <label>Valor Diária (R$)</label><input type="number" id="cfg-diaria">
             <label>Carga Horária (Para Extras)</label>
             <div class="grid-2">
                 <input type="time" id="cfg-h1"> <input type="time" id="cfg-h2">
                 <input type="time" id="cfg-h3"> <input type="time" id="cfg-h4">
             </div>
-            <button class="btn btn-gold" style="margin-top:20px" onclick="salvarConfig()">Salvar e Ativar Alarme</button>
-            <button class="btn btn-outline" onclick="fecharModais()">Sair</button>
+            <button class="btn btn-gold" style="margin-top:20px" onclick="salvarConfig()">Salvar Ajustes</button>
+            <button class="btn btn-outline" onclick="fecharModais()">Cancelar</button>
         </div>
     </div>
 
     <!-- MODAL RETROATIVO -->
     <div id="modal-retro" class="modal">
         <div class="modal-content">
-            <h2>Lançamento Completo</h2>
+            <h2>Lançamento Manual</h2>
             <label>Data</label><input type="date" id="retro-data">
             <div class="grid-2">
                 <input type="time" id="retro-h1"> <input type="time" id="retro-h2">
                 <input type="time" id="retro-h3"> <input type="time" id="retro-h4">
             </div>
-            <label>Senha Master</label><input type="password" id="retro-pass">
-            <button class="btn btn-gold" onclick="salvarRetro()">Gravar Dia</button>
+            <label>Senha de Segurança</label><input type="password" id="retro-pass">
+            <button class="btn btn-gold" onclick="salvarRetro()">Confirmar Lançamento</button>
             <button class="btn btn-outline" onclick="fecharModais()">Sair</button>
         </div>
     </div>
@@ -96,26 +97,37 @@
     <!-- MODAL VALE -->
     <div id="modal-vale" class="modal">
         <div class="modal-content">
-            <h2>Registrar Vale</h2>
+            <h2>Registrar Vale/Adiantamento</h2>
             <label>Valor R$</label><input type="number" id="vale-valor">
             <label>Data</label><input type="date" id="vale-data">
-            <button class="btn btn-gold" onclick="salvarVale()">Salvar</button>
+            <button class="btn btn-gold" onclick="salvarVale()">Salvar Vale</button>
             <button class="btn btn-outline" onclick="fecharModais()">Sair</button>
         </div>
     </div>
 
     <script>
-        const KEY_REGS = "ELITE_REGS"; const KEY_CFG = "ELITE_CFG"; const KEY_VALES = "ELITE_VALES";
+        const KEY_REGS = "ELITE_REGS_V15"; 
+        const KEY_CFG = "ELITE_CFG_V15"; 
+        const KEY_VALES = "ELITE_VALES_V15";
 
-        // Inicialização
+        // Registro do Service Worker para PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').then(() => console.log("SW Ativo"));
+        }
+
         window.onload = () => {
             atualizarStatus();
-            solicitarNotificacao();
+            if(Notification.permission !== "granted") Notification.requestPermission();
             setInterval(verificarAlarmes, 60000);
-            setInterval(() => document.getElementById('clock').innerText = new Date().toLocaleTimeString('pt-BR'), 1000);
+            setInterval(() => {
+                document.getElementById('clock').innerText = new Date().toLocaleTimeString('pt-BR');
+            }, 1000);
+            
+            // Configurar seleção de dias
+            document.querySelectorAll('.day-item').forEach(el => {
+                el.onclick = () => el.classList.toggle('active');
+            });
         };
-
-        function solicitarNotificacao() { if(Notification.permission !== "granted") Notification.requestPermission(); }
 
         function abrirModal(id) {
             document.getElementById(id).style.display = 'block';
@@ -139,7 +151,8 @@
         }
 
         function salvarConfig() {
-            const dias = []; document.querySelectorAll('.day-item.active').forEach(el => dias.push(parseInt(el.dataset.day)));
+            const dias = []; 
+            document.querySelectorAll('.day-item.active').forEach(el => dias.push(parseInt(el.dataset.day)));
             const cfg = {
                 nome: document.getElementById('cfg-nome').value,
                 zap: document.getElementById('cfg-zap').value,
@@ -149,19 +162,26 @@
                 dias: dias
             };
             localStorage.setItem(KEY_CFG, JSON.stringify(cfg));
-            alert("Ajustes Salvos!"); fecharModais(); atualizarStatus();
+            alert("Configurações atualizadas!");
+            fecharModais();
+            atualizarStatus();
         }
 
         function registrarPonto() {
-            const r = JSON.parse(localStorage.getItem(KEY_REGS) || "[]");
+            let r = JSON.parse(localStorage.getItem(KEY_REGS) || "[]");
             const agora = new Date();
-            const novo = { data: agora.toLocaleDateString('sv-SE'), hora: agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}), ts: agora.getTime() };
+            const novo = { 
+                data: agora.toLocaleDateString('sv-SE'), 
+                hora: agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}), 
+                ts: agora.getTime() 
+            };
+            
             r.push(novo);
             localStorage.setItem(KEY_REGS, JSON.stringify(r));
             
             enviarZap(novo.hora);
-            alert("Ponto batido e comprovante pronto!");
             atualizarStatus();
+            alert("Ponto Registrado: " + novo.hora);
         }
 
         function enviarZap(hora) {
@@ -177,89 +197,173 @@
             const horaAtual = agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
             if((cfg.dias || []).includes(agora.getDay())) {
                 if([cfg.h1, cfg.h2, cfg.h3, cfg.h4].includes(horaAtual)) {
-                    new Notification("ELITE PRO: HORA DO PONTO!", { body: "Abra o app agora para bater seu ponto.", icon: "https://cdn-icons-png.flaticon.com/512/552/552791.png" });
+                    if(Notification.permission === "granted") {
+                        new Notification("HORA DO PONTO!", { body: "Registre seu ponto agora no Elite Pro." });
+                    }
                 }
             }
         }
 
-        function toMin(h) { if(!h || h==="-") return 0; const [hrs, min] = h.split(':').map(Number); return (hrs * 60) + min; }
+        function toMin(h) { 
+            if(!h || h === "-" || h === "") return 0; 
+            const [hrs, min] = h.split(':').map(Number); 
+            return (hrs * 60) + min; 
+        }
 
         async function gerarPDF() {
-            const { jsPDF } = window.jspdf; const doc = new jsPDF();
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
             const cfg = JSON.parse(localStorage.getItem(KEY_CFG) || "{}");
             const regs = JSON.parse(localStorage.getItem(KEY_REGS) || "[]");
             const vales = JSON.parse(localStorage.getItem(KEY_VALES) || "[]");
 
-            doc.setFontSize(16); doc.text("CONTABILIDADE ELITE PRO", 105, 15, {align:'center'});
-            doc.setFontSize(10); doc.text(`Nome: ${cfg.nome || '--'} | Diária: R$ ${Number(cfg.diaria||0).toFixed(2)}`, 14, 25);
+            doc.setFontSize(18);
+            doc.text("FOLHA DE PONTO ELITE PRO", 105, 15, {align:'center'});
+            doc.setFontSize(10);
+            doc.text(`Colaborador: ${cfg.nome || 'Não Configurado'}`, 14, 25);
+            doc.text(`Valor Diária: R$ ${Number(cfg.diaria||0).toFixed(2)}`, 14, 30);
 
+            // Agrupar batidas por dia
             const diasAg = {};
-            regs.sort((a,b)=>a.ts-b.ts).forEach(r => {
+            regs.sort((a,b)=>a.ts - b.ts).forEach(r => {
                 if(!diasAg[r.data]) diasAg[r.data] = [];
                 if(diasAg[r.data].length < 4) diasAg[r.data].push(r.hora);
             });
 
-            const cargaMin = (toMin(cfg.h2)-toMin(cfg.h1)) + (toMin(cfg.h4)-toMin(cfg.h3));
-            let totalEx = 0;
-            const rows = Object.keys(diasAg).map(d => {
+            // Carga horária esperada em minutos
+            const cargaEsperada = (toMin(cfg.h2)-toMin(cfg.h1)) + (toMin(cfg.h4)-toMin(cfg.h3));
+            let totalMinutosExtras = 0;
+            
+            const rows = Object.keys(diasAg).sort().map(d => {
                 const p = diasAg[d];
-                let trab = (toMin(p[1])-toMin(p[0])) + (toMin(p[3])-toMin(p[2]));
-                let ex = (cargaMin > 0 && trab > cargaMin) ? trab - cargaMin : 0;
-                totalEx += ex;
-                return [d.split('-').reverse().join('/'), p[0]||'-', p[1]||'-', p[2]||'-', p[3]||'-', (ex/60).toFixed(2)+'h'];
+                const h1 = p[0]||"-", h2 = p[1]||"-", h3 = p[2]||"-", h4 = p[3]||"-";
+                
+                let trabalhado = (toMin(h2)-toMin(h1)) + (toMin(h4)-toMin(h3));
+                let extra = 0;
+                if(cargaEsperada > 0 && trabalhado > cargaEsperada) {
+                    extra = trabalhado - cargaEsperada;
+                    totalMinutosExtras += extra;
+                }
+
+                return [
+                    d.split('-').reverse().join('/'),
+                    h1, h2, h3, h4,
+                    extra > 0 ? (extra/60).toFixed(2)+'h' : '0.00h'
+                ];
             });
 
-            doc.autoTable({ startY: 35, head: [['Data', 'Ent.', 'Alm.S', 'Alm.V', 'Saí.', 'Extra']], body: rows });
+            doc.autoTable({
+                startY: 35,
+                head: [['Data', 'Entrada', 'Alm. Saída', 'Alm. Volta', 'Saída', 'Extra']],
+                body: rows,
+                theme: 'grid',
+                headStyles: { fillColor: [212, 175, 55] }
+            });
 
-            let tVales = 0;
-            const vRows = vales.map(v => { tVales += v.valor; return [v.data.split('-').reverse().join('/'), `R$ ${v.valor.toFixed(2)}`]; });
-            doc.autoTable({ startY: doc.lastAutoTable.finalY + 10, head: [['Data Vale', 'Valor']], body: vRows });
+            // Tabela de Vales
+            let totalVales = 0;
+            const vRows = vales.map(v => { 
+                totalVales += Number(v.valor); 
+                return [v.data.split('-').reverse().join('/'), `R$ ${Number(v.valor).toFixed(2)}`]; 
+            });
 
-            const vDiarias = Object.keys(diasAg).length * (cfg.diaria || 0);
-            const vEx = ((cfg.diaria || 0) / 8) * (totalEx / 60);
-            const saldo = (vDiarias + vEx) - tVales;
+            if(vRows.length > 0) {
+                doc.autoTable({
+                    startY: doc.lastAutoTable.finalY + 10,
+                    head: [['Data do Vale', 'Valor Retirado']],
+                    body: vRows,
+                    headStyles: { fillColor: [200, 50, 50] }
+                });
+            }
 
-            const fY = doc.lastAutoTable.finalY + 15;
+            // Resumo Financeiro
+            const qtdDias = Object.keys(diasAg).length;
+            const totalDiarias = qtdDias * (cfg.diaria || 0);
+            const valorHoraExtra = ((cfg.diaria || 0) / 8); // Base 8h
+            const totalGanhoExtras = valorHoraExtra * (totalMinutosExtras / 60);
+            const saldoLiquido = (totalDiarias + totalGanhoExtras) - totalVales;
+
+            const finalY = doc.lastAutoTable.finalY + 15;
             doc.setFont(undefined, 'bold');
-            doc.text(`(+) Salário: R$ ${vDiarias.toFixed(2)}`, 14, fY);
-            doc.text(`(+) Extras: R$ ${vEx.toFixed(2)}`, 14, fY+7);
-            doc.text(`(-) Vales: R$ ${tVales.toFixed(2)}`, 14, fY+14);
-            doc.text(`SALDO LÍQUIDO: R$ ${saldo.toFixed(2)}`, 14, fY+24);
+            doc.text(`RESUMO DE PAGAMENTO`, 14, finalY);
+            doc.setFont(undefined, 'normal');
+            doc.text(`(+) Total Diárias (${qtdDias}): R$ ${totalDiarias.toFixed(2)}`, 14, finalY + 7);
+            doc.text(`(+) Total Extras (${(totalMinutosExtras/60).toFixed(2)}h): R$ ${totalGanhoExtras.toFixed(2)}`, 14, finalY + 14);
+            doc.text(`(-) Total Vales: R$ ${totalVales.toFixed(2)}`, 14, finalY + 21);
+            doc.setFontSize(12);
+            doc.text(`SALDO LÍQUIDO A RECEBER: R$ ${saldoLiquido.toFixed(2)}`, 14, finalY + 30);
 
-            doc.save(`Ponto_${cfg.nome}.pdf`);
+            doc.save(`Ponto_${cfg.nome || 'Elite'}.pdf`);
         }
 
         function salvarRetro() {
-            if(document.getElementById('retro-pass').value !== "1801") return alert("Senha Errada");
+            if(document.getElementById('retro-pass').value !== "1801") return alert("Senha Incorreta!");
             const d = document.getElementById('retro-data').value;
-            const h = [document.getElementById('retro-h1').value, document.getElementById('retro-h2').value, document.getElementById('retro-h3').value, document.getElementById('retro-h4').value];
-            const r = JSON.parse(localStorage.getItem(KEY_REGS) || "[]");
-            h.forEach(hora => { if(hora) r.push({ data: d, hora, ts: new Date(d+"T"+hora).getTime() }); });
+            if(!d) return alert("Selecione a data!");
+            
+            const horas = [
+                document.getElementById('retro-h1').value,
+                document.getElementById('retro-h2').value,
+                document.getElementById('retro-h3').value,
+                document.getElementById('retro-h4').value
+            ];
+
+            let r = JSON.parse(localStorage.getItem(KEY_REGS) || "[]");
+            horas.forEach(h => {
+                if(h) {
+                    r.push({ data: d, hora: h, ts: new Date(d + "T" + h).getTime() });
+                }
+            });
+
             localStorage.setItem(KEY_REGS, JSON.stringify(r));
-            fecharModais(); atualizarStatus();
+            alert("Dia lançado com sucesso!");
+            fecharModais();
+            atualizarStatus();
         }
 
         function salvarVale() {
-            const v = parseFloat(document.getElementById('vale-valor').value || 0);
+            const v = document.getElementById('vale-valor').value;
             const d = document.getElementById('vale-data').value;
-            const vales = JSON.parse(localStorage.getItem(KEY_VALES) || "[]");
-            vales.push({ valor: v, data: d });
+            if(!v || !d) return alert("Preencha valor e data!");
+
+            let vales = JSON.parse(localStorage.getItem(KEY_VALES) || "[]");
+            vales.push({ valor: parseFloat(v), data: d });
             localStorage.setItem(KEY_VALES, JSON.stringify(vales));
+            
+            alert("Vale registrado!");
             fecharModais();
         }
 
         function atualizarStatus() {
             const regs = JSON.parse(localStorage.getItem(KEY_REGS) || "[]");
-            const batidas = regs.filter(r => r.data === new Date().toLocaleDateString('sv-SE')).length;
-            const dot = document.getElementById('status-dot'), txt = document.getElementById('status-text');
-            if(batidas === 0) { s("#ff3b30", "Aguardando Entrada"); }
-            else if(batidas % 2 !== 0) { s("#4cd964", "Em Serviço"); }
-            else { s("#ff9500", "Intervalo/Pausa"); }
-            function s(c, t) { dot.style.backgroundColor = c; txt.style.color = c; txt.innerText = t; }
+            const hoje = new Date().toLocaleDateString('sv-SE');
+            const batidasHoje = regs.filter(r => r.data === hoje).length;
+            
+            const dot = document.getElementById('status-dot');
+            const txt = document.getElementById('status-text');
+
+            if(batidasHoje === 0) {
+                s("#ff3b30", "FORA DE SERVIÇO");
+            } else if(batidasHoje % 2 !== 0) {
+                s("#4cd964", "EM SERVIÇO");
+            } else {
+                s("#ff9500", "EM PAUSA/ALMOÇO");
+            }
+
+            function s(c, t) { 
+                dot.style.backgroundColor = c; 
+                dot.style.boxShadow = `0 0 10px ${c}`;
+                txt.style.color = c; 
+                txt.innerText = t; 
+            }
         }
 
-        function limparTudo() { if(confirm("Apagar tudo?")) { localStorage.clear(); location.reload(); } }
-        document.querySelectorAll('.day-item').forEach(el => el.onclick = () => el.classList.toggle('active'));
+        function limparTudo() {
+            if(confirm("Deseja ZERAR todos os dados do sistema? Esta ação não pode ser desfeita.")) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
     </script>
 </body>
 </html>
