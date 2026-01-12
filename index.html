@@ -68,7 +68,7 @@
             <label>Nome Completo</label><input type="text" id="cfg-nome">
             <label>WhatsApp (com DDD)</label><input type="number" id="cfg-zap" placeholder="5511999999999">
             <label>Valor Diária (R$)</label><input type="number" id="cfg-diaria">
-            <label>Horários Oficiais (Para cálculo de Extra)</label>
+            <label>Horários Oficiais (Para preenchimento automático)</label>
             <div class="grid-2">
                 <input type="time" id="cfg-h1"> <input type="time" id="cfg-h2">
                 <input type="time" id="cfg-h3"> <input type="time" id="cfg-h4">
@@ -82,14 +82,14 @@
     <div id="modal-retro" class="modal">
         <div class="modal-content">
             <h2>Lançamento Retroativo</h2>
-            <p style="font-size: 10px; color: #888;">Preencha a data e os horários do dia.</p>
-            <label>Data</label><input type="date" id="retro-data">
+            <p style="font-size: 10px; color: #888;">Os horários abaixo foram puxados dos seus ajustes.</p>
+            <label>Data do Dia Esquecido</label><input type="date" id="retro-data">
             <div class="grid-2">
                 <input type="time" id="retro-h1"> <input type="time" id="retro-h2">
                 <input type="time" id="retro-h3"> <input type="time" id="retro-h4">
             </div>
-            <label>Senha Master</label><input type="password" id="retro-pass" placeholder="Digite a senha">
-            <button class="btn btn-gold" style="margin-top:15px" onclick="salvarRetro()">Gravar no Histórico</button>
+            <label>Senha Master (1801)</label><input type="password" id="retro-pass" placeholder="Senha">
+            <button class="btn btn-gold" style="margin-top:15px" onclick="salvarRetro()">Gravar Dia Completo</button>
             <button class="btn btn-outline" onclick="fecharModais()">Cancelar</button>
         </div>
     </div>
@@ -98,8 +98,8 @@
     <div id="modal-vale" class="modal">
         <div class="modal-content">
             <h2>Registrar Vale</h2>
-            <label>Valor (R$)</label><input type="number" id="vale-valor" placeholder="0.00">
-            <label>Data</label><input type="date" id="vale-data">
+            <label>Valor (R$)</label><input type="number" id="vale-valor" placeholder="Ex: 50.00">
+            <label>Data do Vale</label><input type="date" id="vale-data">
             <button class="btn btn-gold" style="margin-top:15px" onclick="salvarVale()">Salvar Vale</button>
             <button class="btn btn-outline" onclick="fecharModais()">Cancelar</button>
         </div>
@@ -114,29 +114,40 @@
             atualizarStatus();
             setInterval(() => document.getElementById('clock').innerText = new Date().toLocaleTimeString('pt-BR'), 1000);
             document.querySelectorAll('.day-item').forEach(el => el.onclick = () => el.classList.toggle('active'));
-            if(Notification.permission !== "granted") Notification.requestPermission();
         };
 
         function abrirModal(id) {
             document.getElementById(id).style.display = 'block';
-            if(id === 'modal-config') carregarConfigInputs();
+            const cfg = JSON.parse(localStorage.getItem(KEY_CFG) || "{}");
+            
+            if(id === 'modal-config') {
+                document.getElementById('cfg-nome').value = cfg.nome || "";
+                document.getElementById('cfg-zap').value = cfg.zap || "";
+                document.getElementById('cfg-diaria').value = cfg.diaria || "";
+                document.getElementById('cfg-h1').value = cfg.h1 || "";
+                document.getElementById('cfg-h2').value = cfg.h2 || "";
+                document.getElementById('cfg-h3').value = cfg.h3 || "";
+                document.getElementById('cfg-h4').value = cfg.h4 || "";
+                document.querySelectorAll('.day-item').forEach(el => {
+                    el.classList.toggle('active', (cfg.dias || []).includes(parseInt(el.dataset.day)));
+                });
+            }
+
+            if(id === 'modal-retro') {
+                // PREENCHE AUTOMATICAMENTE COM O QUE ESTÁ NOS AJUSTES
+                document.getElementById('retro-h1').value = cfg.h1 || "";
+                document.getElementById('retro-h2').value = cfg.h2 || "";
+                document.getElementById('retro-h3').value = cfg.h3 || "";
+                document.getElementById('retro-h4').value = cfg.h4 || "";
+                document.getElementById('retro-data').value = new Date().toLocaleDateString('sv-SE');
+            }
+            
+            if(id === 'modal-vale') {
+                document.getElementById('vale-data').value = new Date().toLocaleDateString('sv-SE');
+            }
         }
 
         function fecharModais() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
-
-        function carregarConfigInputs() {
-            const cfg = JSON.parse(localStorage.getItem(KEY_CFG) || "{}");
-            document.getElementById('cfg-nome').value = cfg.nome || "";
-            document.getElementById('cfg-zap').value = cfg.zap || "";
-            document.getElementById('cfg-diaria').value = cfg.diaria || "";
-            document.getElementById('cfg-h1').value = cfg.h1 || "";
-            document.getElementById('cfg-h2').value = cfg.h2 || "";
-            document.getElementById('cfg-h3').value = cfg.h3 || "";
-            document.getElementById('cfg-h4').value = cfg.h4 || "";
-            document.querySelectorAll('.day-item').forEach(el => {
-                el.classList.toggle('active', (cfg.dias || []).includes(parseInt(el.dataset.day)));
-            });
-        }
 
         function salvarConfig() {
             const dias = []; 
@@ -150,7 +161,9 @@
                 dias: dias
             };
             localStorage.setItem(KEY_CFG, JSON.stringify(cfg));
-            alert("Ajustes Salvos!"); fecharModais(); atualizarStatus();
+            alert("Ajustes Salvos com sucesso!"); 
+            fecharModais(); 
+            atualizarStatus();
         }
 
         function registrarPonto() {
@@ -165,61 +178,47 @@
             localStorage.setItem(KEY_REGS, JSON.stringify(r));
             enviarZap(novo.hora);
             atualizarStatus();
-            alert("Ponto batido com sucesso!");
+            alert("Ponto batido: " + novo.hora);
         }
 
         function salvarRetro() {
-            const pass = document.getElementById('retro-pass').value;
-            if(pass !== "1801") return alert("Senha Incorreta!");
-
+            if(document.getElementById('retro-pass').value !== "1801") return alert("Senha Incorreta!");
             const data = document.getElementById('retro-data').value;
-            if(!data) return alert("Selecione uma data!");
+            if(!data) return alert("Escolha a data!");
 
             const h1 = document.getElementById('retro-h1').value;
             const h2 = document.getElementById('retro-h2').value;
             const h3 = document.getElementById('retro-h3').value;
             const h4 = document.getElementById('retro-h4').value;
 
-            if(!h1 && !h2 && !h3 && !h4) return alert("Preencha ao menos um horário!");
-
             let r = JSON.parse(localStorage.getItem(KEY_REGS) || "[]");
             const horas = [h1, h2, h3, h4];
 
             horas.forEach(h => {
-                if(h) {
-                    // Criar um timestamp válido para a data escolhida
-                    const ts = new Date(`${data}T${h}:00`).getTime();
+                if(h && h !== "") {
+                    // Criar data fake para ordenar corretamente
+                    const ts = new Date(data + "T" + h).getTime();
                     r.push({ data: data, hora: h, ts: ts });
                 }
             });
 
             localStorage.setItem(KEY_REGS, JSON.stringify(r));
-            alert("Dia registrado no sistema!");
+            alert("Dia " + data + " gravado com sucesso!");
             fecharModais();
             atualizarStatus();
-            document.getElementById('retro-pass').value = ""; // limpa senha
         }
 
         function salvarVale() {
             const valor = document.getElementById('vale-valor').value;
             const data = document.getElementById('vale-data').value;
-
             if(!valor || !data) return alert("Preencha valor e data!");
 
             let v = JSON.parse(localStorage.getItem(KEY_VALES) || "[]");
             v.push({ valor: parseFloat(valor), data: data });
             localStorage.setItem(KEY_VALES, JSON.stringify(v));
 
-            alert("Vale registrado!");
+            alert("Vale de R$" + valor + " salvo!");
             fecharModais();
-            document.getElementById('vale-valor').value = "";
-        }
-
-        function enviarZap(hora) {
-            const cfg = JSON.parse(localStorage.getItem(KEY_CFG) || "{}");
-            if(!cfg.zap) return;
-            const msg = window.encodeURIComponent(`*COMPROVANTE DE PONTO*\n📌 Nome: ${cfg.nome}\n⏰ Hora: ${hora}\n📅 Data: ${new Date().toLocaleDateString('pt-BR')}`);
-            window.open(`https://wa.me/${cfg.zap}?text=${msg}`);
         }
 
         function atualizarStatus() {
@@ -281,7 +280,14 @@
             doc.save(`Ponto_${cfg.nome}.pdf`);
         }
 
-        function limparTudo() { if(confirm("Apagar todos os registros permanentemente?")) { localStorage.clear(); location.reload(); } }
+        function enviarZap(hora) {
+            const cfg = JSON.parse(localStorage.getItem(KEY_CFG) || "{}");
+            if(!cfg.zap) return;
+            const msg = window.encodeURIComponent(`*COMPROVANTE DE PONTO*\n📌 Nome: ${cfg.nome}\n⏰ Hora: ${hora}\n📅 Data: ${new Date().toLocaleDateString('pt-BR')}`);
+            window.open(`https://wa.me/${cfg.zap}?text=${msg}`);
+        }
+
+        function limparTudo() { if(confirm("Apagar tudo?")) { localStorage.clear(); location.reload(); } }
     </script>
 </body>
 </html>
