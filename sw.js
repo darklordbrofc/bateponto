@@ -1,5 +1,4 @@
-// ARQUIVO sw.js
-const CACHE_NAME = 'ponto-elite-v16'; // Mudei de v15 para v16
+const CACHE_NAME = 'ponto-elite-v16.2'; // Mude para 16.2
 const ASSETS = [
   './',
   './index.html',
@@ -9,7 +8,7 @@ const ASSETS = [
 ];
 
 self.addEventListener('install', (e) => {
-  self.skipWaiting(); // Força a instalação imediata
+  self.skipWaiting(); 
   e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)));
 });
 
@@ -17,7 +16,7 @@ self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then(keys => Promise.all(
       keys.map(key => {
-        if (key !== CACHE_NAME) return caches.delete(key); // Apaga o lixo antigo
+        if (key !== CACHE_NAME) return caches.delete(key); 
       })
     ))
   );
