@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ponto-elite-v16.2'; // Mude para 16.2
+const CACHE_NAME = 'ponto-elite-v17.0';
 const ASSETS = [
   './',
   './index.html',
