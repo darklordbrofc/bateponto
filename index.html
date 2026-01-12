@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#D4AF37">
     <link rel="manifest" href="manifest.json">
-    <title>Ponto Elite Pro V16 - Gold</title>
+    <title>Ponto Elite Pro V17 - Gold</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
@@ -48,7 +48,7 @@
         <button class="btn btn-outline" style="color:#5af" onclick="abrirModal('modal-retro')">✎ Lançamento Retroativo</button>
         <button class="btn btn-outline" onclick="abrirModal('modal-vale')">💰 Registrar Vale</button>
         <div class="grid-2">
-            <button class="btn btn-outline" onclick="gerarPDF()">📄 Gerar PDF</button>
+            <button class="btn btn-outline" onclick="gerarPDF()">📄 Gerar PDF Total</button>
             <button class="btn btn-outline" onclick="abrirModal('modal-config')">⚙ Ajustes</button>
         </div>
         <button class="btn btn-outline" style="color: #ff3b30; border-color: #400; margin-top:15px" onclick="limparTudo()">🗑 Zerar Dados</button>
@@ -58,22 +58,22 @@
     <div id="modal-config" class="modal">
         <div class="modal-content">
             <h2 style="color: var(--gold);">Configurações</h2>
-            <label>Dias de Trabalho</label>
+            <label>Dias Normais de Trabalho</label>
             <div class="grid-2" style="grid-template-columns: repeat(4, 1fr);">
                 <div class="day-item" data-day="1">SEG</div><div class="day-item" data-day="2">TER</div>
                 <div class="day-item" data-day="3">QUA</div><div class="day-item" data-day="4">QUI</div>
                 <div class="day-item" data-day="5">SEX</div><div class="day-item" data-day="6">SAB</div>
                 <div class="day-item" data-day="0">DOM</div>
             </div>
-            <label>Nome Completo</label><input type="text" id="cfg-nome">
-            <label>WhatsApp (com DDD)</label><input type="number" id="cfg-zap" placeholder="5511999999999">
-            <label>Valor Diária (R$)</label><input type="number" id="cfg-diaria">
-            <label>Horário Padrão (Entrada / Almoço S. / Almoço V. / Saída)</label>
+            <label>Nome do Colaborador</label><input type="text" id="cfg-nome">
+            <label>WhatsApp Destino</label><input type="number" id="cfg-zap">
+            <label>Valor da Diária (R$)</label><input type="number" id="cfg-diaria">
+            <label>Carga Horária Padrão (Ex: 08:00 às 17:00)</label>
             <div class="grid-2">
                 <input type="time" id="cfg-h1"> <input type="time" id="cfg-h2">
                 <input type="time" id="cfg-h3"> <input type="time" id="cfg-h4">
             </div>
-            <button class="btn btn-gold" style="margin-top:20px" onclick="salvarConfig()">Salvar</button>
+            <button class="btn btn-gold" style="margin-top:20px" onclick="salvarConfig()">Salvar Ajustes</button>
             <button class="btn btn-outline" onclick="fecharModais()">Sair</button>
         </div>
     </div>
@@ -81,14 +81,14 @@
     <!-- MODAL RETROATIVO -->
     <div id="modal-retro" class="modal">
         <div class="modal-content">
-            <h2>Lançamento Retroativo</h2>
-            <label>Data do Dia Esquecido</label><input type="date" id="retro-data">
+            <h2>Lançamento Manual</h2>
+            <label>Data</label><input type="date" id="retro-data">
             <div class="grid-2">
                 <input type="time" id="retro-h1"> <input type="time" id="retro-h2">
                 <input type="time" id="retro-h3"> <input type="time" id="retro-h4">
             </div>
-            <label>Senha Master (1801)</label><input type="password" id="retro-pass" placeholder="Senha">
-            <button class="btn btn-gold" style="margin-top:15px" onclick="salvarRetro()">Gravar Dia Completo</button>
+            <label>Senha Master</label><input type="password" id="retro-pass" placeholder="1801">
+            <button class="btn btn-gold" style="margin-top:15px" onclick="salvarRetro()">Gravar Dia</button>
             <button class="btn btn-outline" onclick="fecharModais()">Cancelar</button>
         </div>
     </div>
@@ -97,14 +97,14 @@
     <div id="modal-vale" class="modal">
         <div class="modal-content">
             <h2>Registrar Vale</h2>
-            <label>Valor (R$)</label><input type="number" id="vale-valor" placeholder="Ex: 50.00">
-            <label>Data do Vale</label><input type="date" id="vale-data">
+            <label>Valor R$</label><input type="number" id="vale-valor" placeholder="0.00">
+            <label>Data</label><input type="date" id="vale-data">
             <button class="btn btn-gold" style="margin-top:15px" onclick="salvarVale()">Salvar Vale</button>
             <button class="btn btn-outline" onclick="fecharModais()">Cancelar</button>
         </div>
     </div>
 
-    <div style="text-align: center; color: #333; font-size: 8px; margin-top: 10px;">Versão 16.2 - PDF Total Integrado</div>
+    <div style="text-align: center; color: #333; font-size: 8px; margin-top: 15px;">Versão 17.0 - Precisão Extra Sábado/Domingo</div>
 
     <script>
         const KEY_REGS = "ELITE_REGS_V15"; 
@@ -120,7 +120,6 @@
         function abrirModal(id) {
             document.getElementById(id).style.display = 'block';
             const cfg = JSON.parse(localStorage.getItem(KEY_CFG) || "{}");
-            
             if(id === 'modal-config') {
                 document.getElementById('cfg-nome').value = cfg.nome || "";
                 document.getElementById('cfg-zap').value = cfg.zap || "";
@@ -129,11 +128,8 @@
                 document.getElementById('cfg-h2').value = cfg.h2 || "";
                 document.getElementById('cfg-h3').value = cfg.h3 || "";
                 document.getElementById('cfg-h4').value = cfg.h4 || "";
-                document.querySelectorAll('.day-item').forEach(el => {
-                    el.classList.toggle('active', (cfg.dias || []).includes(parseInt(el.dataset.day)));
-                });
+                document.querySelectorAll('.day-item').forEach(el => el.classList.toggle('active', (cfg.dias || []).includes(parseInt(el.dataset.day))));
             }
-
             if(id === 'modal-retro') {
                 document.getElementById('retro-h1').value = cfg.h1 || "";
                 document.getElementById('retro-h2').value = cfg.h2 || "";
@@ -141,10 +137,7 @@
                 document.getElementById('retro-h4').value = cfg.h4 || "";
                 document.getElementById('retro-data').value = new Date().toLocaleDateString('sv-SE');
             }
-            
-            if(id === 'modal-vale') {
-                document.getElementById('vale-data').value = new Date().toLocaleDateString('sv-SE');
-            }
+            if(id === 'modal-vale') document.getElementById('vale-data').value = new Date().toLocaleDateString('sv-SE');
         }
 
         function fecharModais() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
@@ -153,8 +146,7 @@
             const dias = []; 
             document.querySelectorAll('.day-item.active').forEach(el => dias.push(parseInt(el.dataset.day)));
             const cfg = {
-                nome: document.getElementById('cfg-nome').value,
-                zap: document.getElementById('cfg-zap').value,
+                nome: document.getElementById('cfg-nome').value, zap: document.getElementById('cfg-zap').value,
                 diaria: parseFloat(document.getElementById('cfg-diaria').value || 0),
                 h1: document.getElementById('cfg-h1').value, h2: document.getElementById('cfg-h2').value,
                 h3: document.getElementById('cfg-h3').value, h4: document.getElementById('cfg-h4').value,
@@ -167,142 +159,97 @@
         function registrarPonto() {
             let r = JSON.parse(localStorage.getItem(KEY_REGS) || "[]");
             const agora = new Date();
-            const novo = { 
-                data: agora.toLocaleDateString('sv-SE'), 
-                hora: agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}), 
-                ts: agora.getTime() 
-            };
+            const novo = { data: agora.toLocaleDateString('sv-SE'), hora: agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}), ts: agora.getTime() };
             r.push(novo);
             localStorage.setItem(KEY_REGS, JSON.stringify(r));
-            enviarZap(novo.hora);
-            atualizarStatus();
-            alert("Ponto batido: " + novo.hora);
+            enviarZap(novo.hora); atualizarStatus(); alert("Ponto batido!");
         }
 
         function salvarRetro() {
             if(document.getElementById('retro-pass').value !== "1801") return alert("Senha Incorreta!");
             const data = document.getElementById('retro-data').value;
             if(!data) return alert("Escolha a data!");
-
-            const h1 = document.getElementById('retro-h1').value;
-            const h2 = document.getElementById('retro-h2').value;
-            const h3 = document.getElementById('retro-h3').value;
-            const h4 = document.getElementById('retro-h4').value;
-
             let r = JSON.parse(localStorage.getItem(KEY_REGS) || "[]");
-            
-            // Adiciona cada hora preenchida como um registro separado
-            [h1, h2, h3, h4].forEach(h => {
-                if(h) {
-                    r.push({ data: data, hora: h, ts: new Date(data + "T" + h).getTime() });
-                }
+            [document.getElementById('retro-h1').value, document.getElementById('retro-h2').value, document.getElementById('retro-h3').value, document.getElementById('retro-h4').value].forEach(h => {
+                if(h) r.push({ data: data, hora: h, ts: new Date(data + "T" + h).getTime() });
             });
-
             localStorage.setItem(KEY_REGS, JSON.stringify(r));
-            alert("Dia gravado!");
-            fecharModais();
-            atualizarStatus();
+            alert("Dia Gravado!"); fecharModais(); atualizarStatus();
         }
 
         function salvarVale() {
-            const valor = document.getElementById('vale-valor').value;
-            const data = document.getElementById('vale-data').value;
-            if(!valor || !data) return alert("Preencha valor e data!");
-
-            let v = JSON.parse(localStorage.getItem(KEY_VALES) || "[]");
-            v.push({ valor: parseFloat(valor), data: data });
-            localStorage.setItem(KEY_VALES, JSON.stringify(v));
-            alert("Vale salvo!");
-            fecharModais();
+            const v = document.getElementById('vale-valor').value, d = document.getElementById('vale-data').value;
+            if(!v || !d) return alert("Faltam dados!");
+            let vales = JSON.parse(localStorage.getItem(KEY_VALES) || "[]");
+            vales.push({ valor: parseFloat(v), data: d });
+            localStorage.setItem(KEY_VALES, JSON.stringify(vales));
+            alert("Vale Salvo!"); fecharModais();
         }
 
-        function toMin(h) { 
-            if(!h || h === "-" || h === "") return 0;
-            const parts = h.split(':');
-            return (parseInt(parts[0]) * 60) + parseInt(parts[1]);
-        }
+        function toMin(h) { if(!h || h === "-" || h === "") return 0; const parts = h.split(':'); return (parseInt(parts[0]) * 60) + parseInt(parts[1]); }
 
         async function gerarPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+            const { jsPDF } = window.jspdf; const doc = new jsPDF();
             const cfg = JSON.parse(localStorage.getItem(KEY_CFG) || "{}");
             const regs = JSON.parse(localStorage.getItem(KEY_REGS) || "[]");
             const vales = JSON.parse(localStorage.getItem(KEY_VALES) || "[]");
 
-            doc.setFontSize(16);
-            doc.text("EXTRATO DE PONTO - ELITE PRO", 105, 15, {align:'center'});
-            doc.setFontSize(10);
-            doc.text(`Nome: ${cfg.nome || '---'} | Diária: R$ ${Number(cfg.diaria||0).toFixed(2)}`, 14, 25);
+            doc.setFontSize(16); doc.text("EXTRATO TOTAL ELITE PRO", 105, 15, {align:'center'});
+            doc.setFontSize(10); doc.text(`Nome: ${cfg.nome || '---'} | Diária: R$ ${Number(cfg.diaria||0).toFixed(2)}`, 14, 25);
 
-            // AGRUPAMENTO DE TODAS AS BATIDAS (PONTO E RETROATIVO)
             const diasAg = {};
-            regs.forEach(r => {
-                if(!diasAg[r.data]) diasAg[r.data] = [];
-                diasAg[r.data].push(r.hora);
-            });
+            regs.forEach(r => { if(!diasAg[r.data]) diasAg[r.data] = []; diasAg[r.data].push(r.hora); });
 
-            // Ordenar as batidas de cada dia e garantir que pegamos as 4 principais
-            Object.keys(diasAg).forEach(d => {
-                diasAg[d].sort(); 
-            });
-
-            const cargaPadrao = (toMin(cfg.h2)-toMin(cfg.h1)) + (toMin(cfg.h4)-toMin(cfg.h3));
+            const cargaPadraoMin = (toMin(cfg.h2)-toMin(cfg.h1)) + (toMin(cfg.h4)-toMin(cfg.h3));
             let totalExtrasMin = 0;
 
             const rows = Object.keys(diasAg).sort().map(d => {
-                const p = diasAg[d];
+                const p = diasAg[d].sort();
                 const h1 = p[0]||"-", h2 = p[1]||"-", h3 = p[2]||"-", h4 = p[3]||"-";
+                const trabalhado = (toMin(h2)-toMin(h1)) + (toMin(h4)-toMin(h3));
                 
-                let trab = (toMin(h2)-toMin(h1)) + (toMin(h4)-toMin(h3));
-                let ex = (cargaPadrao > 0 && trab > cargaPadrao) ? trab - cargaPadrao : 0;
-                totalExtrasMin += ex;
+                // LÓGICA DE PRECISÃO: Sábado/Domingo ou dia não marcado nos ajustes = 100% EXTRA
+                const dataObj = new Date(d + "T12:00:00");
+                const diaSemana = dataObj.getDay(); 
+                const eDiaDeTrabalho = (cfg.dias || []).includes(diaSemana);
 
-                return [
-                    d.split('-').reverse().join('/'), 
-                    h1, h2, h3, h4, 
-                    ex > 0 ? (ex/60).toFixed(2)+'h' : '0.00h'
-                ];
+                let extra = 0;
+                if (!eDiaDeTrabalho) {
+                    extra = trabalhado; // Dia de folga: tudo é extra
+                } else {
+                    extra = (trabalhado > cargaPadraoMin) ? trabalhado - cargaPadraoMin : 0;
+                }
+                
+                totalExtrasMin += extra;
+                return [d.split('-').reverse().join('/'), h1, h2, h3, h4, (extra/60).toFixed(2)+'h'];
             });
 
-            doc.autoTable({ 
-                startY: 35, 
-                head: [['Data', 'Entrada', 'Alm. Saída', 'Alm. Volta', 'Saída', 'Extra']], 
-                body: rows,
-                headStyles: { fillColor: [212, 175, 55] }
-            });
+            doc.autoTable({ startY: 35, head: [['Data', 'Entrada', 'Alm. S', 'Alm. V', 'Saída', 'Extra']], body: rows, headStyles: { fillColor: [212, 175, 55] } });
 
-            // TABELA DE VALES
-            let totalValesVal = 0;
-            const vRows = vales.sort((a,b) => a.data.localeCompare(b.data)).map(v => { 
-                totalValesVal += v.valor; 
-                return [v.data.split('-').reverse().join('/'), `R$ ${v.valor.toFixed(2)}`]; 
-            });
+            let totalVales = 0;
+            const vRows = vales.sort((a,b)=>a.data.localeCompare(b.data)).map(v => { totalVales += v.valor; return [v.data.split('-').reverse().join('/'), `R$ ${v.valor.toFixed(2)}`]; });
+            if(vRows.length > 0) doc.autoTable({ startY: doc.lastAutoTable.finalY + 10, head: [['Data Vale', 'Valor']], body: vRows, headStyles: { fillColor: [180, 0, 0] } });
 
-            if(vRows.length > 0) {
-                doc.autoTable({ 
-                    startY: doc.lastAutoTable.finalY + 10, 
-                    head: [['Data Vale', 'Valor']], 
-                    body: vRows,
-                    headStyles: { fillColor: [150, 0, 0] }
-                });
-            }
-
-            // CÁLCULOS FINAIS
-            const vDiarias = Object.keys(diasAg).length * (cfg.diaria || 0);
-            const vEx = ((cfg.diaria || 0) / 8) * (totalExtrasMin / 60);
-            const saldoTotal = (vDiarias + vEx) - totalValesVal;
+            const valorDiarias = Object.keys(diasAg).length * (cfg.diaria || 0);
+            const valorExtras = ((cfg.diaria || 0) / 8) * (totalExtrasMin / 60);
+            const liquido = (valorDiarias + valorExtras) - totalVales;
 
             const fY = doc.lastAutoTable.finalY + 15;
-            doc.setFont(undefined, 'bold');
-            doc.text(`RESUMO GERAL:`, 14, fY);
+            doc.setFont(undefined, 'bold'); doc.text(`RESUMO FINAL:`, 14, fY);
             doc.setFont(undefined, 'normal');
-            doc.text(`(+) Salário Diárias (${Object.keys(diasAg).length} dias): R$ ${vDiarias.toFixed(2)}`, 14, fY+7);
-            doc.text(`(+) Total Horas Extras: R$ ${vEx.toFixed(2)}`, 14, fY+14);
-            doc.text(`(-) Total de Vales: R$ ${totalValesVal.toFixed(2)}`, 14, fY+21);
-            doc.setFontSize(12);
-            doc.text(`SALDO LÍQUIDO: R$ ${saldoTotal.toFixed(2)}`, 14, fY+30);
+            doc.text(`(+) Salário Base (${Object.keys(diasAg).length} dias): R$ ${valorDiarias.toFixed(2)}`, 14, fY+7);
+            doc.text(`(+) Total Horas Extras: R$ ${valorExtras.toFixed(2)}`, 14, fY+14);
+            doc.text(`(-) Total Vales: R$ ${totalVales.toFixed(2)}`, 14, fY+21);
+            doc.setFontSize(12); doc.text(`SALDO LÍQUIDO: R$ ${liquido.toFixed(2)}`, 14, fY+30);
 
-            doc.save(`Relatorio_Ponto_${cfg.nome}.pdf`);
+            doc.save(`Folha_Elite_Pro_${cfg.nome}.pdf`);
+        }
+
+        function enviarZap(hora) {
+            const cfg = JSON.parse(localStorage.getItem(KEY_CFG) || "{}");
+            if(!cfg.zap) return;
+            const msg = window.encodeURIComponent(`*PONTO ELITE PRO*\n📌 Nome: ${cfg.nome}\n⏰ Hora: ${hora}\n📅 Data: ${new Date().toLocaleDateString('pt-BR')}`);
+            window.open(`https://wa.me/${cfg.zap}?text=${msg}`);
         }
 
         function atualizarStatus() {
@@ -312,18 +259,11 @@
             const dot = document.getElementById('status-dot'), txt = document.getElementById('status-text');
             if(batidas === 0) { s("#ff3b30", "Aguardando Entrada"); }
             else if(batidas % 2 !== 0) { s("#4cd964", "Em Serviço"); }
-            else { s("#ff9500", "Pausa/Intervalo"); }
+            else { s("#ff9500", "Intervalo"); }
             function s(c, t) { dot.style.backgroundColor = c; txt.style.color = c; txt.innerText = t; }
         }
 
-        function enviarZap(hora) {
-            const cfg = JSON.parse(localStorage.getItem(KEY_CFG) || "{}");
-            if(!cfg.zap) return;
-            const msg = window.encodeURIComponent(`*COMPROVANTE DE PONTO*\n📌 Nome: ${cfg.nome}\n⏰ Hora: ${hora}\n📅 Data: ${new Date().toLocaleDateString('pt-BR')}`);
-            window.open(`https://wa.me/${cfg.zap}?text=${msg}`);
-        }
-
-        function limparTudo() { if(confirm("Apagar todos os dados permanentemente?")) { localStorage.clear(); location.reload(); } }
+        function limparTudo() { if(confirm("Zerar todos os dados?")) { localStorage.clear(); location.reload(); } }
     </script>
 </body>
 </html>
