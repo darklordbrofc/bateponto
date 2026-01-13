@@ -5,47 +5,76 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#D4AF37">
     <link rel="manifest" href="manifest.json">
-    <title>Ponto Elite Pro V21 - Gold</title>
+    <title>Ponto Elite Diamond V22</title>
     
-    <!-- Bibliotecas com Cache-Busting -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600&display=swap');
-        :root { --gold: #D4AF37; --gold-grad: linear-gradient(135deg, #f9e498 0%, #D4AF37 50%, #b8860b 100%); --bg: #050505; }
-        body { font-family: 'Poppins', sans-serif; background-color: var(--bg); color: #fff; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding-bottom: 50px; }
-        .status-bar { width: 100%; padding: 12px 0; display: flex; justify-content: center; align-items: center; gap: 10px; background: #000; border-bottom: 1px solid #222; font-size: 11px; font-weight: 700; }
-        .dot { width: 10px; height: 10px; border-radius: 50%; box-shadow: 0 0 10px currentColor; }
-        .header h1 { font-family: 'Orbitron', sans-serif; background: var(--gold-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 24px; margin: 20px 0; }
-        .clock-box { text-align: center; margin-bottom: 20px; padding: 15px 40px; background: rgba(212, 175, 55, 0.1); border-radius: 50px; border: 1px solid var(--gold); }
-        #clock { font-family: 'Orbitron', sans-serif; font-size: 32px; color: var(--gold); }
-        .main-container { width: 92%; max-width: 400px; background: #111; padding: 25px; border-radius: 28px; border: 1px solid #222; box-shadow: 0 20px 40px rgba(0,0,0,0.5); box-sizing: border-box; }
-        .btn { width: 100%; padding: 18px; margin: 8px 0; border: none; border-radius: 16px; font-weight: 700; text-transform: uppercase; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; color: #fff; }
-        .btn-gold { background: var(--gold-grad); color: #000; }
-        .btn-outline { background: transparent; border: 1px solid #333; color: #aaa; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; overflow-y: auto; padding-top: 20px; }
-        .modal-content { background: #0f0f0f; width: 90%; max-width: 400px; margin: auto; padding: 25px; border-radius: 24px; border: 1px solid #333; box-sizing: border-box; }
-        label { color: var(--gold); font-size: 10px; font-weight: 700; display: block; margin-top: 15px; }
-        input { width: 100%; padding: 14px; margin-top: 5px; background: #1a1a1a; border: 1px solid #333; border-radius: 10px; color: #fff; box-sizing: border-box; font-size: 16px; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .day-item { font-size: 10px; padding: 10px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; text-align: center; cursor: pointer; }
-        .day-item.active { background: var(--gold-grad); color: #000; font-weight: bold; }
+        :root { --gold: #D4AF37; --gold-grad: linear-gradient(135deg, #f9e498 0%, #D4AF37 50%, #b8860b 100%); --bg: #050505; --card: #121212; }
+        
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg); color: #fff; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding-bottom: 40px; overflow-x: hidden; }
+        
+        /* Status Bar Premium */
+        .status-bar { width: 100%; padding: 10px 0; display: flex; justify-content: center; align-items: center; gap: 8px; background: #000; border-bottom: 1px solid #1a1a1a; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 12px currentColor; }
+        
+        .header h1 { font-family: 'Orbitron', sans-serif; background: var(--gold-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 22px; margin: 15px 0; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+
+        /* Dashboard de Ganhos */
+        .dashboard { width: 92%; max-width: 400px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .dash-card { background: var(--card); border: 1px solid #222; padding: 12px 8px; border-radius: 16px; text-align: center; }
+        .dash-card span { display: block; font-size: 9px; color: #888; text-transform: uppercase; margin-bottom: 4px; }
+        .dash-card b { font-size: 13px; color: var(--gold); font-family: 'Orbitron', sans-serif; }
+
+        .clock-box { text-align: center; margin-bottom: 20px; padding: 10px 35px; background: rgba(212, 175, 55, 0.05); border-radius: 50px; border: 1px solid rgba(212, 175, 55, 0.3); }
+        #clock { font-family: 'Orbitron', sans-serif; font-size: 28px; color: var(--gold); text-shadow: 0 0 15px rgba(212, 175, 55, 0.3); }
+
+        .main-container { width: 92%; max-width: 400px; background: var(--card); padding: 22px; border-radius: 30px; border: 1px solid #1a1a1a; box-shadow: 0 25px 50px rgba(0,0,0,0.6); box-sizing: border-box; }
+        
+        .btn { width: 100%; padding: 16px; margin: 8px 0; border: none; border-radius: 18px; font-weight: 700; text-transform: uppercase; cursor: pointer; font-size: 11px; display: flex; align-items: center; justify-content: center; color: #fff; transition: 0.3s; }
+        .btn:active { transform: scale(0.96); }
+        .btn-gold { background: var(--gold-grad); color: #000; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2); }
+        .btn-outline { background: #1a1a1a; border: 1px solid #222; color: #ccc; }
+        .btn-outline:hover { border-color: #444; color: #fff; }
+
+        /* Modais */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 1000; backdrop-filter: blur(5px); padding-top: 20px; }
+        .modal-content { background: #0a0a0a; width: 90%; max-width: 380px; margin: auto; padding: 25px; border-radius: 28px; border: 1px solid #222; box-sizing: border-box; }
+        h2 { color: var(--gold); font-family: 'Orbitron', sans-serif; font-size: 18px; margin-top: 0; }
+        
+        label { color: #888; font-size: 10px; font-weight: 600; display: block; margin-top: 15px; text-transform: uppercase; }
+        input { width: 100%; padding: 14px; margin-top: 5px; background: #151515; border: 1px solid #222; border-radius: 12px; color: #fff; box-sizing: border-box; font-size: 15px; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--gold); background: #1a1a1a; }
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .day-item { font-size: 9px; padding: 12px 5px; background: #151515; border: 1px solid #222; border-radius: 12px; text-align: center; cursor: pointer; color: #666; transition: 0.3s; }
+        .day-item.active { background: var(--gold-grad); color: #000; font-weight: bold; border-color: transparent; }
+
+        #ver-tag { text-align: center; color: #333; font-size: 8px; margin-top: 20px; letter-spacing: 2px; }
     </style>
 </head>
 <body>
 
     <div class="status-bar">
         <div class="dot" id="status-dot"></div>
-        <span id="status-text">...</span>
+        <span id="status-text">Sistema Pronto</span>
     </div>
 
-    <div class="header"><h1>PONTO ELITE PRO</h1></div>
+    <div class="header"><h1>PONTO ELITE <span style="font-weight:300">DIAMOND</span></h1></div>
+
+    <!-- Dashboard Financeiro -->
+    <div class="dashboard">
+        <div class="dash-card"><span>Bruto</span><b id="dash-bruto">R$ 0,00</b></div>
+        <div class="dash-card"><span>Extras</span><b id="dash-extras">0.00h</b></div>
+        <div class="dash-card"><span>Vales</span><b id="dash-vales" style="color:#ff3b30">R$ 0,00</b></div>
+    </div>
 
     <div class="clock-box"><div id="clock">00:00:00</div></div>
 
     <div class="main-container">
-        <button class="btn btn-gold" id="btn-main-ponto" onclick="registrarPonto()">Carregando...</button>
+        <button class="btn btn-gold" id="btn-main-ponto" onclick="registrarPonto()">Aguardando...</button>
         
         <div class="grid-2">
             <button class="btn btn-outline" style="color:#5af" onclick="abrirModal('modal-retro')">✎ Retroativo</button>
@@ -55,7 +84,7 @@
         <button class="btn btn-outline" onclick="abrirModal('modal-vale')">💰 Registrar Vale</button>
         
         <div class="grid-2">
-            <button class="btn btn-outline" onclick="gerarPDF()">📄 Gerar PDF</button>
+            <button class="btn btn-outline" onclick="gerarPDF()">📄 Relatório PDF</button>
             <button class="btn btn-outline" onclick="abrirModal('modal-config')">⚙ Ajustes</button>
         </div>
     </div>
@@ -63,22 +92,23 @@
     <!-- MODAL BACKUP -->
     <div id="modal-backup" class="modal">
         <div class="modal-content">
-            <h2 style="color: var(--gold);">Segurança de Dados</h2>
-            <button class="btn btn-gold" onclick="exportarBackupArquivo()">⬇️ Baixar Arquivo de Backup</button>
-            <div style="margin-top:20px; border-top: 1px dashed #333; padding-top:15px">
-                <label>Restaurar Backup</label>
+            <h2>Segurança</h2>
+            <p style="font-size:11px; color:#666">Proteja seus dados baixando um backup mensal.</p>
+            <button class="btn btn-gold" onclick="exportarBackupArquivo()">Exportar Backup (.json)</button>
+            <div style="margin-top:20px; border-top: 1px solid #222; padding-top:15px">
+                <label>Restaurar Banco de Dados</label>
                 <input type="file" id="importFile" accept=".json">
-                <button class="btn btn-outline" style="color:#4cd964" onclick="importarBackupArquivo()">⬆️ Restaurar Agora</button>
+                <button class="btn btn-outline" style="color:#4cd964" onclick="importarBackupArquivo()">Importar e Sobrescrever</button>
             </div>
-            <button class="btn btn-outline" style="margin-top:20px" onclick="fecharModais()">Sair</button>
+            <button class="btn btn-outline" style="margin-top:20px" onclick="fecharModais()">Voltar</button>
         </div>
     </div>
 
     <!-- MODAL AJUSTES -->
     <div id="modal-config" class="modal">
         <div class="modal-content">
-            <h2 style="color: var(--gold);">Configurações</h2>
-            <label>Dias de Trabalho</label>
+            <h2>Configurações</h2>
+            <label>Sua Escala (Folgas em cinza)</label>
             <div class="grid-2" style="grid-template-columns: repeat(4, 1fr);">
                 <div class="day-item" data-day="1">SEG</div><div class="day-item" data-day="2">TER</div>
                 <div class="day-item" data-day="3">QUA</div><div class="day-item" data-day="4">QUI</div>
@@ -86,16 +116,15 @@
                 <div class="day-item" data-day="0">DOM</div>
             </div>
             <label>Nome Completo</label><input type="text" id="cfg-nome">
-            <label>WhatsApp (55...)</label><input type="number" id="cfg-zap">
-            <label>E-mail (Comprovante)</label><input type="email" id="cfg-email">
+            <label>WhatsApp Destino</label><input type="number" id="cfg-zap" placeholder="55119...">
             <label>Valor Diária (R$)</label><input type="number" id="cfg-diaria">
-            <label>Horários Oficiais (Padrão)</label>
+            <label>Horários Padrão (Carga Horária)</label>
             <div class="grid-2">
                 <input type="time" id="cfg-h1"> <input type="time" id="cfg-h2">
                 <input type="time" id="cfg-h3"> <input type="time" id="cfg-h4">
             </div>
-            <button class="btn btn-gold" style="margin-top:20px" onclick="salvarConfig()">Salvar</button>
-            <button class="btn btn-outline" style="color: #ff3b30; border-color: #400;" onclick="limparTudo()">🗑 Zerar Sistema</button>
+            <button class="btn btn-gold" style="margin-top:20px" onclick="salvarConfig()">Salvar Alterações</button>
+            <button class="btn btn-outline" style="color:#ff3b30; border-color:#300" onclick="limparTudo()">Apagar Todo Histórico</button>
             <button class="btn btn-outline" onclick="fecharModais()">Sair</button>
         </div>
     </div>
@@ -110,7 +139,7 @@
                 <input type="time" id="retro-h3"> <input type="time" id="retro-h4">
             </div>
             <label>Senha Master</label><input type="password" id="retro-pass" placeholder="1801">
-            <button class="btn btn-gold" style="margin-top:15px" onclick="salvarRetro()">Gravar Dia</button>
+            <button class="btn btn-gold" style="margin-top:15px" onclick="salvarRetro()">Salvar Dia Completo</button>
             <button class="btn btn-outline" onclick="fecharModais()">Cancelar</button>
         </div>
     </div>
@@ -118,32 +147,28 @@
     <!-- MODAL VALE -->
     <div id="modal-vale" class="modal">
         <div class="modal-content">
-            <h2>Registrar Vale</h2>
-            <label>Valor R$</label><input type="number" id="vale-valor">
+            <h2>Novo Vale</h2>
+            <label>Valor R$</label><input type="number" id="vale-valor" placeholder="0.00">
             <label>Data</label><input type="date" id="vale-data">
-            <button class="btn btn-gold" style="margin-top:15px" onclick="salvarVale()">Salvar</button>
-            <button class="btn btn-outline" onclick="fecharModais()">Cancelar</button>
+            <button class="btn btn-gold" style="margin-top:15px" onclick="salvarVale()">Registrar Vale</button>
+            <button class="btn btn-outline" onclick="fecharModais()">Sair</button>
         </div>
     </div>
 
-    <div id="ver-tag" style="text-align: center; color: #333; font-size: 8px; margin-top: 15px;">Versão 21.0 - Auto-Update Ativo</div>
+    <div id="ver-tag">V22.0 DIAMOND • AUTO-SYNC ON</div>
 
     <script>
-        // --- CHAVES DE DADOS ---
-        const KEY_REGS = "ELITE_REGS_V21"; 
-        const KEY_CFG = "ELITE_CFG_V21"; 
-        const KEY_VALES = "ELITE_VALES_V21";
+        const KEY_REGS = "ELITE_REGS_V22"; 
+        const KEY_CFG = "ELITE_CFG_V22"; 
+        const KEY_VALES = "ELITE_VALES_V22";
 
-        // --- LÓGICA DE AUTO-UPDATE (NÃO PRECISA LIMPAR CACHE) ---
+        // AUTO-UPDATE
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js?v=21.0').then(reg => {
+            navigator.serviceWorker.register('sw.js?v=22.0').then(reg => {
                 reg.onupdatefound = () => {
-                    const installingWorker = reg.installing;
-                    installingWorker.onstatechange = () => {
-                        if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                            console.log("Nova versão detectada! Atualizando...");
-                            window.location.reload(); 
-                        }
+                    const worker = reg.installing;
+                    worker.onstatechange = () => {
+                        if (worker.state === 'installed' && navigator.serviceWorker.controller) window.location.reload();
                     };
                 };
             });
@@ -151,43 +176,20 @@
 
         window.onload = () => {
             atualizarStatus();
-            setInterval(() => document.getElementById('clock').innerText = new Date().toLocaleTimeString('pt-BR'), 1000);
+            setInterval(() => {
+                document.getElementById('clock').innerText = new Date().toLocaleTimeString('pt-BR');
+            }, 1000);
             document.querySelectorAll('.day-item').forEach(el => el.onclick = () => el.classList.toggle('active'));
         };
 
-        // --- FUNÇÕES DE BACKUP ---
-        function exportarBackupArquivo() {
-            const data = { regs: localStorage.getItem(KEY_REGS), cfg: localStorage.getItem(KEY_CFG), vales: localStorage.getItem(KEY_VALES) };
-            const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `backup_ponto_${new Date().toLocaleDateString('sv-SE')}.json`;
-            a.click();
-        }
-
-        function importarBackupArquivo() {
-            const file = document.getElementById('importFile').files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const d = JSON.parse(e.target.result);
-                if(d.regs) localStorage.setItem(KEY_REGS, d.regs);
-                if(d.cfg) localStorage.setItem(KEY_CFG, d.cfg);
-                if(d.vales) localStorage.setItem(KEY_VALES, d.vales);
-                alert("Dados Restaurados!"); location.reload();
-            };
-            reader.readAsText(file);
-        }
-
-        // --- FUNÇÕES CORE ---
         function abrirModal(id) {
-            document.getElementById(id).style.display = 'block';
+            const modal = document.getElementById(id);
+            modal.style.display = 'block';
             const cfg = JSON.parse(localStorage.getItem(KEY_CFG) || "{}");
+            
             if(id === 'modal-config') {
                 document.getElementById('cfg-nome').value = cfg.nome || "";
                 document.getElementById('cfg-zap').value = cfg.zap || "";
-                document.getElementById('cfg-email').value = cfg.email || "";
                 document.getElementById('cfg-diaria').value = cfg.diaria || "";
                 document.getElementById('cfg-h1').value = cfg.h1 || "";
                 document.getElementById('cfg-h2').value = cfg.h2 || "";
@@ -195,22 +197,31 @@
                 document.getElementById('cfg-h4').value = cfg.h4 || "";
                 document.querySelectorAll('.day-item').forEach(el => el.classList.toggle('active', (cfg.dias || []).includes(parseInt(el.dataset.day))));
             }
-            if(id === 'modal-retro') document.getElementById('retro-data').value = new Date().toLocaleDateString('sv-SE');
+
+            if(id === 'modal-retro') {
+                // PREENCHIMENTO AUTOMÁTICO RETROATIVO
+                document.getElementById('retro-h1').value = cfg.h1 || "";
+                document.getElementById('retro-h2').value = cfg.h2 || "";
+                document.getElementById('retro-h3').value = cfg.h3 || "";
+                document.getElementById('retro-h4').value = cfg.h4 || "";
+                document.getElementById('retro-data').value = new Date().toLocaleDateString('sv-SE');
+            }
             if(id === 'modal-vale') document.getElementById('vale-data').value = new Date().toLocaleDateString('sv-SE');
         }
 
         function fecharModais() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
 
         function salvarConfig() {
-            const dias = []; document.querySelectorAll('.day-item.active').forEach(el => dias.push(parseInt(el.dataset.day)));
+            const dias = []; 
+            document.querySelectorAll('.day-item.active').forEach(el => dias.push(parseInt(el.dataset.day)));
             const cfg = {
                 nome: document.getElementById('cfg-nome').value, zap: document.getElementById('cfg-zap').value,
-                email: document.getElementById('cfg-email').value, diaria: parseFloat(document.getElementById('cfg-diaria').value || 0),
+                diaria: parseFloat(document.getElementById('cfg-diaria').value || 0),
                 h1: document.getElementById('cfg-h1').value, h2: document.getElementById('cfg-h2').value,
                 h3: document.getElementById('cfg-h3').value, h4: document.getElementById('cfg-h4').value, dias: dias
             };
             localStorage.setItem(KEY_CFG, JSON.stringify(cfg));
-            alert("Salvo!"); fecharModais(); atualizarStatus();
+            fecharModais(); atualizarStatus();
         }
 
         function registrarPonto() {
@@ -222,50 +233,73 @@
             if (batidasHoje === 3) {
                 const [hCfg, mCfg] = (cfg.h4 || "17:00").split(':').map(Number);
                 const limite = new Date(); limite.setHours(hCfg, mCfg, 0);
-                if (agora < limite && !confirm("Ainda não chegou o horário oficial. Encerrar mesmo assim?")) return;
+                if (agora < limite && !confirm("Horário oficial de término ainda não atingido. Encerrar mesmo assim?")) return;
             }
 
             const novo = { data: hoje, hora: agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}), ts: agora.getTime() };
-            r.push(novo); localStorage.setItem(KEY_REGS, JSON.stringify(r));
-            const tipos = ["INÍCIO", "ALMOÇO (SAÍDA)", "ALMOÇO (RETORNO)", "ENCERRAMENTO"];
+            r.push(novo); 
+            localStorage.setItem(KEY_REGS, JSON.stringify(r));
+            
+            const tipos = ["INÍCIO", "ALMOÇO (S)", "ALMOÇO (V)", "ENCERRAMENTO"];
             enviarZap(novo.hora, tipos[batidasHoje] || "EXTRA");
             atualizarStatus();
         }
 
         function atualizarStatus() {
             const regs = JSON.parse(localStorage.getItem(KEY_REGS) || "[]");
+            const vales = JSON.parse(localStorage.getItem(KEY_VALES) || "[]");
+            const cfg = JSON.parse(localStorage.getItem(KEY_CFG) || "{}");
             const hoje = new Date().toLocaleDateString('sv-SE');
             const batidas = regs.filter(r => r.data === hoje).length;
+
+            // Update Dash
+            const diasAg = {}; regs.forEach(r => { if(!diasAg[r.data]) diasAg[r.data] = []; diasAg[r.data].push(r.hora); });
+            const cargaPadraoMin = (toMin(cfg.h2)-toMin(cfg.h1)) + (toMin(cfg.h4)-toMin(cfg.h3));
+            let tExMin = 0; let tVales = 0;
+            
+            vales.forEach(v => tVales += v.valor);
+            Object.keys(diasAg).forEach(d => {
+                const p = diasAg[d].sort();
+                const trab = (toMin(p[1])-toMin(p[0])) + (toMin(p[3])-toMin(p[2]));
+                const eTrabalho = (cfg.dias || []).includes(new Date(d + "T12:00:00").getDay());
+                tExMin += (!eTrabalho) ? trab : (trab > cargaPadraoMin ? trab - cargaPadraoMin : 0);
+            });
+
+            const vBruto = (Object.keys(diasAg).length * (cfg.diaria || 0)) + (((cfg.diaria || 0)/8) * (tExMin/60));
+            document.getElementById('dash-bruto').innerText = `R$ ${vBruto.toFixed(2)}`;
+            document.getElementById('dash-extras').innerText = `${(tExMin/60).toFixed(2)}h`;
+            document.getElementById('dash-vales').innerText = `R$ ${tVales.toFixed(2)}`;
+
             const dot = document.getElementById('status-dot'), txt = document.getElementById('status-text'), btn = document.getElementById('btn-main-ponto');
             const estados = [
-                { t: "Iniciar Serviço", s: "Aguardando", c: "#ff3b30" },
-                { t: "Sair para Almoço", s: "Em Serviço", c: "#4cd964" },
-                { t: "Retornar do Almoço", s: "Almoço", c: "#ff9500" },
+                { t: "Iniciar Serviço", s: "Disponível", c: "#ff3b30" },
+                { t: "Sair p/ Almoço", s: "Em Serviço", c: "#4cd964" },
+                { t: "Voltar do Almoço", s: "Em Pausa", c: "#ff9500" },
                 { t: "Encerrar Atividades", s: "Em Serviço", c: "#4cd964" },
-                { t: "Bater Extra", s: "Encerrado", c: "#5af" }
+                { t: "Registrar Extra", s: "Finalizado", c: "#5af" }
             ];
             const atual = estados[batidas] || estados[4];
             btn.innerText = atual.t; txt.innerText = atual.s; txt.style.color = atual.c; dot.style.backgroundColor = atual.c;
         }
 
         function salvarRetro() {
-            if(document.getElementById('retro-pass').value !== "1801") return alert("Senha Errada!");
+            if(document.getElementById('retro-pass').value !== "1801") return alert("Senha Incorreta");
             const data = document.getElementById('retro-data').value;
             let r = JSON.parse(localStorage.getItem(KEY_REGS) || "[]");
             [document.getElementById('retro-h1').value, document.getElementById('retro-h2').value, document.getElementById('retro-h3').value, document.getElementById('retro-h4').value].forEach(h => {
                 if(h) r.push({ data: data, hora: h, ts: new Date(data + "T" + h).getTime() });
             });
             localStorage.setItem(KEY_REGS, JSON.stringify(r));
-            alert("Salvo!"); fecharModais(); atualizarStatus();
+            fecharModais(); atualizarStatus(); alert("Dia gravado com sucesso!");
         }
 
         function salvarVale() {
-            const v = document.getElementById('vale-valor').value, d = document.getElementById('vale-data').value;
-            if(!v || !d) return alert("Erro!");
+            const v = parseFloat(document.getElementById('vale-valor').value || 0), d = document.getElementById('vale-data').value;
+            if(!v || !d) return alert("Preencha todos os campos");
             let vales = JSON.parse(localStorage.getItem(KEY_VALES) || "[]");
-            vales.push({ valor: parseFloat(v), data: d });
+            vales.push({ valor: v, data: d });
             localStorage.setItem(KEY_VALES, JSON.stringify(vales));
-            alert("Vale Salvo!"); fecharModais();
+            fecharModais(); atualizarStatus();
         }
 
         function toMin(h) { if(!h || h === "-" || h === "") return 0; const parts = h.split(':'); return (parseInt(parts[0]) * 60) + parseInt(parts[1]); }
@@ -275,34 +309,72 @@
             const cfg = JSON.parse(localStorage.getItem(KEY_CFG) || "{}");
             const regs = JSON.parse(localStorage.getItem(KEY_REGS) || "[]");
             const vales = JSON.parse(localStorage.getItem(KEY_VALES) || "[]");
-            doc.setFontSize(16); doc.text("FOLHA DE PONTO ELITE PRO", 105, 15, {align:'center'});
+
+            doc.setFillColor(30, 30, 30); doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(212, 175, 55); doc.setFontSize(22); doc.text("FOLHA DE PONTO ELITE DIAMOND", 105, 20, {align:'center'});
+            doc.setTextColor(150, 150, 150); doc.setFontSize(10); doc.text(`EXTRATO PROFISSIONAL DE: ${cfg.nome || 'NÃO CONFIGURADO'}`, 105, 30, {align:'center'});
+
             const diasAg = {}; regs.forEach(r => { if(!diasAg[r.data]) diasAg[r.data] = []; diasAg[r.data].push(r.hora); });
             const cargaPadraoMin = (toMin(cfg.h2)-toMin(cfg.h1)) + (toMin(cfg.h4)-toMin(cfg.h3));
-            let totalEx = 0;
+            let tExMin = 0;
+            
             const rows = Object.keys(diasAg).sort().map(d => {
                 const p = diasAg[d].sort(); const h1 = p[0]||"-", h2 = p[1]||"-", h3 = p[2]||"-", h4 = p[3]||"-";
                 const trab = (toMin(h2)-toMin(h1)) + (toMin(h4)-toMin(h3));
                 const eTrabalho = (cfg.dias || []).includes(new Date(d + "T12:00:00").getDay());
                 let ex = (!eTrabalho) ? trab : (trab > cargaPadraoMin ? trab - cargaPadraoMin : 0);
-                totalEx += ex;
+                tExMin += ex;
                 return [d.split('-').reverse().join('/'), h1, h2, h3, h4, (ex/60).toFixed(2)+'h'];
             });
-            doc.autoTable({ startY: 35, head: [['Data', 'Início', 'Almoço S', 'Almoço V', 'Fim', 'Extra']], body: rows, headStyles: { fillColor: [212, 175, 55] } });
+
+            doc.autoTable({ startY: 45, head: [['DATA', 'ENTRADA', 'ALMOÇO S.', 'ALMOÇO V.', 'SAÍDA', 'EXTRAS']], body: rows, headStyles: { fillColor: [212, 175, 55], textColor: 0 } });
+
             let tVales = 0; vales.forEach(v => tVales += v.valor);
-            const vDiarias = Object.keys(diasAg).length * (cfg.diaria || 0), vEx = ((cfg.diaria || 0) / 8) * (totalEx / 60);
-            const fY = doc.lastAutoTable.finalY + 15;
-            doc.text(`LÍQUIDO A RECEBER: R$ ${(vDiarias + vEx - tVales).toFixed(2)}`, 14, fY);
-            doc.save(`Folha_${cfg.nome}.pdf`);
+            const vDiarias = Object.keys(diasAg).length * (cfg.diaria || 0);
+            const vExtras = ((cfg.diaria || 0) / 8) * (tExMin / 60);
+
+            doc.setTextColor(0); doc.setFontSize(12);
+            let finalY = doc.lastAutoTable.finalY + 15;
+            doc.text(`Resumo Financeiro:`, 14, finalY);
+            doc.setFontSize(10);
+            doc.text(`(+) Salário por Diárias: R$ ${vDiarias.toFixed(2)}`, 14, finalY + 8);
+            doc.text(`(+) Salário por Extras: R$ ${vExtras.toFixed(2)}`, 14, finalY + 14);
+            doc.setTextColor(200, 0, 0); doc.text(`(-) Desconto de Vales: R$ ${tVales.toFixed(2)}`, 14, finalY + 20);
+            doc.setTextColor(0); doc.setFontSize(14); doc.setFont(undefined, 'bold');
+            doc.text(`SALDO LÍQUIDO: R$ ${(vDiarias + vExtras - tVales).toFixed(2)}`, 14, finalY + 30);
+
+            doc.save(`Folha_Diamond_${cfg.nome}.pdf`);
+        }
+
+        function exportarBackupArquivo() {
+            const data = { regs: localStorage.getItem(KEY_REGS), cfg: localStorage.getItem(KEY_CFG), vales: localStorage.getItem(KEY_VALES) };
+            const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
+            const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+            a.download = `backup_ponto_diamond_${new Date().toLocaleDateString('sv-SE')}.json`; a.click();
+        }
+
+        function importarBackupArquivo() {
+            const file = document.getElementById('importFile').files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const d = JSON.parse(e.target.result);
+                if(d.regs) localStorage.setItem(KEY_REGS, d.regs);
+                if(d.cfg) localStorage.setItem(KEY_CFG, d.cfg);
+                if(d.vales) localStorage.setItem(KEY_VALES, d.vales);
+                alert("Dados restaurados com sucesso!"); location.reload();
+            };
+            reader.readAsText(file);
         }
 
         function enviarZap(hora, tipo) {
             const cfg = JSON.parse(localStorage.getItem(KEY_CFG) || "{}");
             if(!cfg.zap) return;
-            const msg = window.encodeURIComponent(`*PONTO ELITE PRO*\n📌 *Status:* ${tipo}\n⏰ *Hora:* ${hora}\n📅 *Data:* ${new Date().toLocaleDateString('pt-BR')}`);
+            const msg = window.encodeURIComponent(`*DIAMOND PONTO PRO*\n📌 *Status:* ${tipo}\n⏰ *Hora:* ${hora}\n📅 *Data:* ${new Date().toLocaleDateString('pt-BR')}`);
             window.open(`https://wa.me/${cfg.zap}?text=${msg}`);
         }
 
-        function limparTudo() { if(confirm("Apagar tudo?")) { localStorage.clear(); location.reload(); } }
+        function limparTudo() { if(confirm("Deseja apagar permanentemente todos os dados?")) { localStorage.clear(); location.reload(); } }
     </script>
 </body>
 </html>
