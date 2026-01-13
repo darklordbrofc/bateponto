@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#D4AF37">
     <link rel="manifest" href="manifest.json">
-    <title>Ponto Elite Pro V19 - Gold</title>
+    <title>Ponto Elite Pro V21 - Gold</title>
     
+    <!-- Bibliotecas com Cache-Busting -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 
@@ -48,7 +49,7 @@
         
         <div class="grid-2">
             <button class="btn btn-outline" style="color:#5af" onclick="abrirModal('modal-retro')">✎ Retroativo</button>
-            <button class="btn btn-outline" style="color:#f90" onclick="enviarBackupEmail()">📧 E-mail Backup</button>
+            <button class="btn btn-outline" style="color:#f90" onclick="abrirModal('modal-backup')">💾 Backup</button>
         </div>
 
         <button class="btn btn-outline" onclick="abrirModal('modal-vale')">💰 Registrar Vale</button>
@@ -57,8 +58,20 @@
             <button class="btn btn-outline" onclick="gerarPDF()">📄 Gerar PDF</button>
             <button class="btn btn-outline" onclick="abrirModal('modal-config')">⚙ Ajustes</button>
         </div>
-        
-        <button class="btn btn-outline" style="color: #ff3b30; border-color: #400; margin-top:15px" onclick="limparTudo()">🗑 Zerar Sistema</button>
+    </div>
+
+    <!-- MODAL BACKUP -->
+    <div id="modal-backup" class="modal">
+        <div class="modal-content">
+            <h2 style="color: var(--gold);">Segurança de Dados</h2>
+            <button class="btn btn-gold" onclick="exportarBackupArquivo()">⬇️ Baixar Arquivo de Backup</button>
+            <div style="margin-top:20px; border-top: 1px dashed #333; padding-top:15px">
+                <label>Restaurar Backup</label>
+                <input type="file" id="importFile" accept=".json">
+                <button class="btn btn-outline" style="color:#4cd964" onclick="importarBackupArquivo()">⬆️ Restaurar Agora</button>
+            </div>
+            <button class="btn btn-outline" style="margin-top:20px" onclick="fecharModais()">Sair</button>
+        </div>
     </div>
 
     <!-- MODAL AJUSTES -->
@@ -74,14 +87,15 @@
             </div>
             <label>Nome Completo</label><input type="text" id="cfg-nome">
             <label>WhatsApp (55...)</label><input type="number" id="cfg-zap">
-            <label>E-mail para Receber Comprovantes</label><input type="email" id="cfg-email" placeholder="seu@email.com">
+            <label>E-mail (Comprovante)</label><input type="email" id="cfg-email">
             <label>Valor Diária (R$)</label><input type="number" id="cfg-diaria">
-            <label>Horários (Entrada | Almoço | Volta | Saída)</label>
+            <label>Horários Oficiais (Padrão)</label>
             <div class="grid-2">
                 <input type="time" id="cfg-h1"> <input type="time" id="cfg-h2">
                 <input type="time" id="cfg-h3"> <input type="time" id="cfg-h4">
             </div>
             <button class="btn btn-gold" style="margin-top:20px" onclick="salvarConfig()">Salvar</button>
+            <button class="btn btn-outline" style="color: #ff3b30; border-color: #400;" onclick="limparTudo()">🗑 Zerar Sistema</button>
             <button class="btn btn-outline" onclick="fecharModais()">Sair</button>
         </div>
     </div>
@@ -112,12 +126,28 @@
         </div>
     </div>
 
-    <div style="text-align: center; color: #333; font-size: 8px; margin-top: 15px;">Versão 19.0 - Com Backup via E-mail</div>
+    <div id="ver-tag" style="text-align: center; color: #333; font-size: 8px; margin-top: 15px;">Versão 21.0 - Auto-Update Ativo</div>
 
     <script>
-        const KEY_REGS = "ELITE_REGS_V19"; 
-        const KEY_CFG = "ELITE_CFG_V19"; 
-        const KEY_VALES = "ELITE_VALES_V19";
+        // --- CHAVES DE DADOS ---
+        const KEY_REGS = "ELITE_REGS_V21"; 
+        const KEY_CFG = "ELITE_CFG_V21"; 
+        const KEY_VALES = "ELITE_VALES_V21";
+
+        // --- LÓGICA DE AUTO-UPDATE (NÃO PRECISA LIMPAR CACHE) ---
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js?v=21.0').then(reg => {
+                reg.onupdatefound = () => {
+                    const installingWorker = reg.installing;
+                    installingWorker.onstatechange = () => {
+                        if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            console.log("Nova versão detectada! Atualizando...");
+                            window.location.reload(); 
+                        }
+                    };
+                };
+            });
+        }
 
         window.onload = () => {
             atualizarStatus();
@@ -125,6 +155,32 @@
             document.querySelectorAll('.day-item').forEach(el => el.onclick = () => el.classList.toggle('active'));
         };
 
+        // --- FUNÇÕES DE BACKUP ---
+        function exportarBackupArquivo() {
+            const data = { regs: localStorage.getItem(KEY_REGS), cfg: localStorage.getItem(KEY_CFG), vales: localStorage.getItem(KEY_VALES) };
+            const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `backup_ponto_${new Date().toLocaleDateString('sv-SE')}.json`;
+            a.click();
+        }
+
+        function importarBackupArquivo() {
+            const file = document.getElementById('importFile').files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const d = JSON.parse(e.target.result);
+                if(d.regs) localStorage.setItem(KEY_REGS, d.regs);
+                if(d.cfg) localStorage.setItem(KEY_CFG, d.cfg);
+                if(d.vales) localStorage.setItem(KEY_VALES, d.vales);
+                alert("Dados Restaurados!"); location.reload();
+            };
+            reader.readAsText(file);
+        }
+
+        // --- FUNÇÕES CORE ---
         function abrirModal(id) {
             document.getElementById(id).style.display = 'block';
             const cfg = JSON.parse(localStorage.getItem(KEY_CFG) || "{}");
@@ -146,26 +202,21 @@
         function fecharModais() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
 
         function salvarConfig() {
-            const dias = []; 
-            document.querySelectorAll('.day-item.active').forEach(el => dias.push(parseInt(el.dataset.day)));
+            const dias = []; document.querySelectorAll('.day-item.active').forEach(el => dias.push(parseInt(el.dataset.day)));
             const cfg = {
-                nome: document.getElementById('cfg-nome').value, 
-                zap: document.getElementById('cfg-zap').value,
-                email: document.getElementById('cfg-email').value,
-                diaria: parseFloat(document.getElementById('cfg-diaria').value || 0),
+                nome: document.getElementById('cfg-nome').value, zap: document.getElementById('cfg-zap').value,
+                email: document.getElementById('cfg-email').value, diaria: parseFloat(document.getElementById('cfg-diaria').value || 0),
                 h1: document.getElementById('cfg-h1').value, h2: document.getElementById('cfg-h2').value,
-                h3: document.getElementById('cfg-h3').value, h4: document.getElementById('cfg-h4').value,
-                dias: dias
+                h3: document.getElementById('cfg-h3').value, h4: document.getElementById('cfg-h4').value, dias: dias
             };
             localStorage.setItem(KEY_CFG, JSON.stringify(cfg));
-            alert("Ajustes Salvos!"); fecharModais(); atualizarStatus();
+            alert("Salvo!"); fecharModais(); atualizarStatus();
         }
 
         function registrarPonto() {
             const cfg = JSON.parse(localStorage.getItem(KEY_CFG) || "{}");
             let r = JSON.parse(localStorage.getItem(KEY_REGS) || "[]");
-            const agora = new Date();
-            const hoje = agora.toLocaleDateString('sv-SE');
+            const agora = new Date(), hoje = agora.toLocaleDateString('sv-SE');
             const batidasHoje = r.filter(x => x.data === hoje).length;
 
             if (batidasHoje === 3) {
@@ -175,71 +226,31 @@
             }
 
             const novo = { data: hoje, hora: agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}), ts: agora.getTime() };
-            r.push(novo);
-            localStorage.setItem(KEY_REGS, JSON.stringify(r));
-            
+            r.push(novo); localStorage.setItem(KEY_REGS, JSON.stringify(r));
             const tipos = ["INÍCIO", "ALMOÇO (SAÍDA)", "ALMOÇO (RETORNO)", "ENCERRAMENTO"];
-            const tipo = tipos[batidasHoje] || "EXTRA";
-
-            enviarZap(novo.hora, tipo);
-            
-            if(cfg.email) {
-                if(confirm("Deseja enviar o comprovante para o e-mail cadastrado?")) {
-                    enviarComprovanteEmail(novo.hora, tipo, cfg.email, cfg.nome);
-                }
-            }
-
+            enviarZap(novo.hora, tipos[batidasHoje] || "EXTRA");
             atualizarStatus();
-        }
-
-        function enviarComprovanteEmail(hora, tipo, email, nome) {
-            const assunto = `Comprovante Ponto - ${nome} - ${tipo}`;
-            const corpo = `Olá,\n\nSegue comprovante de registro de ponto:\n\nColaborador: ${nome}\nStatus: ${tipo}\nHorário: ${hora}\nData: ${new Date().toLocaleDateString('pt-BR')}\n\nEnviado via Ponto Elite Pro.`;
-            window.location.href = `mailto:${email}?subject=${encodeURIComponent(assunto)}&body=${encodeURIComponent(corpo)}`;
-        }
-
-        function enviarBackupEmail() {
-            const cfg = JSON.parse(localStorage.getItem(KEY_CFG) || "{}");
-            const regs = JSON.parse(localStorage.getItem(KEY_REGS) || "[]");
-            if(!cfg.email) return alert("Cadastre um e-mail nos Ajustes primeiro!");
-            if(regs.length === 0) return alert("Não há registros para enviar.");
-
-            let resumo = `BACKUP GERAL DE PONTO - ${cfg.nome}\n\n`;
-            regs.forEach(r => {
-                resumo += `${r.data.split('-').reverse().join('/')} - ${r.hora}\n`;
-            });
-
-            const assunto = `Backup Geral Ponto Elite - ${cfg.nome}`;
-            window.location.href = `mailto:${cfg.email}?subject=${encodeURIComponent(assunto)}&body=${encodeURIComponent(resumo)}`;
         }
 
         function atualizarStatus() {
             const regs = JSON.parse(localStorage.getItem(KEY_REGS) || "[]");
             const hoje = new Date().toLocaleDateString('sv-SE');
             const batidas = regs.filter(r => r.data === hoje).length;
-            const dot = document.getElementById('status-dot'), 
-                  txt = document.getElementById('status-text'),
-                  btn = document.getElementById('btn-main-ponto');
-
+            const dot = document.getElementById('status-dot'), txt = document.getElementById('status-text'), btn = document.getElementById('btn-main-ponto');
             const estados = [
-                { t: "Iniciar Serviço", s: "Aguardando Início", c: "#ff3b30" },
+                { t: "Iniciar Serviço", s: "Aguardando", c: "#ff3b30" },
                 { t: "Sair para Almoço", s: "Em Serviço", c: "#4cd964" },
-                { t: "Retornar do Almoço", s: "Em Pausa (Almoço)", c: "#ff9500" },
-                { t: "Encerrar Atividades", s: "Em Serviço (Pós-Almoço)", c: "#4cd964" },
-                { t: "Bater Extra", s: "Jornada Encerrada", c: "#5af" }
+                { t: "Retornar do Almoço", s: "Almoço", c: "#ff9500" },
+                { t: "Encerrar Atividades", s: "Em Serviço", c: "#4cd964" },
+                { t: "Bater Extra", s: "Encerrado", c: "#5af" }
             ];
-
             const atual = estados[batidas] || estados[4];
-            btn.innerText = atual.t;
-            txt.innerText = atual.s;
-            txt.style.color = atual.c;
-            dot.style.backgroundColor = atual.c;
+            btn.innerText = atual.t; txt.innerText = atual.s; txt.style.color = atual.c; dot.style.backgroundColor = atual.c;
         }
 
         function salvarRetro() {
             if(document.getElementById('retro-pass').value !== "1801") return alert("Senha Errada!");
             const data = document.getElementById('retro-data').value;
-            if(!data) return alert("Selecione a data!");
             let r = JSON.parse(localStorage.getItem(KEY_REGS) || "[]");
             [document.getElementById('retro-h1').value, document.getElementById('retro-h2').value, document.getElementById('retro-h3').value, document.getElementById('retro-h4').value].forEach(h => {
                 if(h) r.push({ data: data, hora: h, ts: new Date(data + "T" + h).getTime() });
@@ -250,7 +261,7 @@
 
         function salvarVale() {
             const v = document.getElementById('vale-valor').value, d = document.getElementById('vale-data').value;
-            if(!v || !d) return alert("Preencha tudo!");
+            if(!v || !d) return alert("Erro!");
             let vales = JSON.parse(localStorage.getItem(KEY_VALES) || "[]");
             vales.push({ valor: parseFloat(v), data: d });
             localStorage.setItem(KEY_VALES, JSON.stringify(vales));
@@ -264,45 +275,23 @@
             const cfg = JSON.parse(localStorage.getItem(KEY_CFG) || "{}");
             const regs = JSON.parse(localStorage.getItem(KEY_REGS) || "[]");
             const vales = JSON.parse(localStorage.getItem(KEY_VALES) || "[]");
-
             doc.setFontSize(16); doc.text("FOLHA DE PONTO ELITE PRO", 105, 15, {align:'center'});
-            doc.setFontSize(10); doc.text(`Nome: ${cfg.nome || '---'} | Diária: R$ ${Number(cfg.diaria||0).toFixed(2)}`, 14, 25);
-
-            const diasAg = {};
-            regs.forEach(r => { if(!diasAg[r.data]) diasAg[r.data] = []; diasAg[r.data].push(r.hora); });
-
+            const diasAg = {}; regs.forEach(r => { if(!diasAg[r.data]) diasAg[r.data] = []; diasAg[r.data].push(r.hora); });
             const cargaPadraoMin = (toMin(cfg.h2)-toMin(cfg.h1)) + (toMin(cfg.h4)-toMin(cfg.h3));
-            let totalExtrasMin = 0;
-
+            let totalEx = 0;
             const rows = Object.keys(diasAg).sort().map(d => {
-                const p = diasAg[d].sort();
-                const h1 = p[0]||"-", h2 = p[1]||"-", h3 = p[2]||"-", h4 = p[3]||"-";
-                const trabalhado = (toMin(h2)-toMin(h1)) + (toMin(h4)-toMin(h3));
-                const diaSemana = new Date(d + "T12:00:00").getDay(); 
-                const eDiaTrabalho = (cfg.dias || []).includes(diaSemana);
-                let extra = (!eDiaTrabalho) ? trabalhado : (trabalhado > cargaPadraoMin ? trabalhado - cargaPadraoMin : 0);
-                totalExtrasMin += extra;
-                return [d.split('-').reverse().join('/'), h1, h2, h3, h4, (extra/60).toFixed(2)+'h'];
+                const p = diasAg[d].sort(); const h1 = p[0]||"-", h2 = p[1]||"-", h3 = p[2]||"-", h4 = p[3]||"-";
+                const trab = (toMin(h2)-toMin(h1)) + (toMin(h4)-toMin(h3));
+                const eTrabalho = (cfg.dias || []).includes(new Date(d + "T12:00:00").getDay());
+                let ex = (!eTrabalho) ? trab : (trab > cargaPadraoMin ? trab - cargaPadraoMin : 0);
+                totalEx += ex;
+                return [d.split('-').reverse().join('/'), h1, h2, h3, h4, (ex/60).toFixed(2)+'h'];
             });
-
-            doc.autoTable({ startY: 35, head: [['Data', 'Início', 'Alm. S', 'Alm. V', 'Fim', 'Extra']], body: rows, headStyles: { fillColor: [212, 175, 55] } });
-
-            let totalVales = 0;
-            const vRows = vales.sort((a,b)=>a.data.localeCompare(b.data)).map(v => { totalVales += v.valor; return [v.data.split('-').reverse().join('/'), `R$ ${v.valor.toFixed(2)}`]; });
-            if(vRows.length > 0) doc.autoTable({ startY: doc.lastAutoTable.finalY + 10, head: [['Data Vale', 'Valor']], body: vRows, headStyles: { fillColor: [180, 0, 0] } });
-
-            const valorDiarias = Object.keys(diasAg).length * (cfg.diaria || 0);
-            const valorExtras = ((cfg.diaria || 0) / 8) * (totalExtrasMin / 60);
-            const liquido = (valorDiarias + valorExtras) - totalVales;
-
+            doc.autoTable({ startY: 35, head: [['Data', 'Início', 'Almoço S', 'Almoço V', 'Fim', 'Extra']], body: rows, headStyles: { fillColor: [212, 175, 55] } });
+            let tVales = 0; vales.forEach(v => tVales += v.valor);
+            const vDiarias = Object.keys(diasAg).length * (cfg.diaria || 0), vEx = ((cfg.diaria || 0) / 8) * (totalEx / 60);
             const fY = doc.lastAutoTable.finalY + 15;
-            doc.setFont(undefined, 'bold'); doc.text(`RESUMO:`, 14, fY);
-            doc.setFont(undefined, 'normal');
-            doc.text(`(+) Diárias: R$ ${valorDiarias.toFixed(2)}`, 14, fY+7);
-            doc.text(`(+) Extras: R$ ${valorExtras.toFixed(2)}`, 14, fY+14);
-            doc.text(`(-) Vales: R$ ${totalVales.toFixed(2)}`, 14, fY+21);
-            doc.setFontSize(12); doc.text(`SALDO LÍQUIDO: R$ ${liquido.toFixed(2)}`, 14, fY+30);
-
+            doc.text(`LÍQUIDO A RECEBER: R$ ${(vDiarias + vEx - tVales).toFixed(2)}`, 14, fY);
             doc.save(`Folha_${cfg.nome}.pdf`);
         }
 
@@ -313,7 +302,7 @@
             window.open(`https://wa.me/${cfg.zap}?text=${msg}`);
         }
 
-        function limparTudo() { if(confirm("Zerar tudo?")) { localStorage.clear(); location.reload(); } }
+        function limparTudo() { if(confirm("Apagar tudo?")) { localStorage.clear(); location.reload(); } }
     </script>
 </body>
 </html>
