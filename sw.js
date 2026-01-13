@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ponto-elite-v19.0';
+const CACHE_NAME = 'ponto-elite-v21.0';
 const ASSETS = [
   './',
   './index.html',
@@ -7,21 +7,30 @@ const ASSETS = [
   'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js'
 ];
 
+// Instalação: Força o novo worker a assumir o controle
 self.addEventListener('install', (e) => {
-  self.skipWaiting(); 
-  e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)));
+  self.skipWaiting();
+  e.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
+  );
 });
 
+// Ativação: Deleta caches antigos automaticamente
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then(keys => Promise.all(
       keys.map(key => {
-        if (key !== CACHE_NAME) return caches.delete(key); 
+        if (key !== CACHE_NAME) {
+          console.log("Deletando cache antigo:", key);
+          return caches.delete(key);
+        }
       })
-    ))
+    )).then(() => self.clients.claim())
   );
 });
 
 self.addEventListener('fetch', (e) => {
-  e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
+  e.respondWith(
+    caches.match(e.request).then(res => res || fetch(e.request))
+  );
 });
