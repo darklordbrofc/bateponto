@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#D4AF37">
     <link rel="manifest" href="manifest.json">
-    <title>Ponto Elite Diamond V24</title>
+    <title>Ponto Elite Diamond V27</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
@@ -17,57 +17,56 @@
         body { font-family: 'Poppins', sans-serif; background-color: var(--bg); color: #fff; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding-bottom: 40px; overflow-x: hidden; }
         
         .status-bar { width: 100%; padding: 10px 0; display: flex; justify-content: center; align-items: center; gap: 8px; background: #000; border-bottom: 1px solid #1a1a1a; font-size: 10px; font-weight: 700; text-transform: uppercase; }
-        .dot { width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 12px currentColor; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 12px currentColor; transition: 0.3s; }
         
         .header h1 { font-family: 'Orbitron', sans-serif; background: var(--gold-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 20px; margin: 15px 0; }
 
-        /* Dashboard Explicativo */
         .dashboard { width: 92%; max-width: 400px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
         .dash-card { background: var(--card); border: 1px solid #222; padding: 12px 5px; border-radius: 15px; text-align: center; }
         .dash-card span { display: block; font-size: 8px; color: #777; text-transform: uppercase; margin-bottom: 4px; font-weight: bold; }
         .dash-card b { font-size: 12px; color: #fff; font-family: 'Orbitron', sans-serif; }
-        .dash-full { grid-column: span 2; background: linear-gradient(180deg, rgba(212,175,55,0.1) 0%, rgba(0,0,0,0) 100%); border: 1px solid var(--gold); padding: 15px 5px; }
-        .dash-full b { font-size: 20px; color: var(--gold); }
+        .dash-full { grid-column: span 2; background: linear-gradient(180deg, rgba(212,175,55,0.1) 0%, rgba(0,0,0,0) 100%); border: 1px solid var(--gold); padding: 15px 5px; position: relative; overflow: hidden; }
+        .dash-full b { font-size: 22px; color: var(--gold); }
 
         .clock-box { text-align: center; margin-bottom: 15px; padding: 10px 30px; background: rgba(212, 175, 55, 0.05); border-radius: 50px; border: 1px solid rgba(212, 175, 55, 0.2); }
         #clock { font-family: 'Orbitron', sans-serif; font-size: 26px; color: var(--gold); }
 
-        .main-container { width: 92%; max-width: 400px; background: var(--card); padding: 20px; border-radius: 25px; border: 1px solid #1a1a1a; box-sizing: border-box; }
+        .main-container { width: 92%; max-width: 400px; background: var(--card); padding: 20px; border-radius: 25px; border: 1px solid #1a1a1a; box-sizing: border-box; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         
-        .btn { width: 100%; padding: 16px; margin: 6px 0; border: none; border-radius: 15px; font-weight: 700; text-transform: uppercase; cursor: pointer; font-size: 11px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .btn { width: 100%; padding: 16px; margin: 6px 0; border: none; border-radius: 15px; font-weight: 700; text-transform: uppercase; cursor: pointer; font-size: 11px; display: flex; align-items: center; justify-content: center; transition: 0.2s; position: relative; overflow: hidden; }
+        .btn:active { transform: scale(0.98); opacity: 0.8; }
         .btn-gold { background: var(--gold-grad); color: #000; }
         .btn-outline { background: #1a1a1a; border: 1px solid #222; color: #ccc; }
 
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; backdrop-filter: blur(8px); padding-top: 20px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); z-index: 1000; backdrop-filter: blur(10px); padding-top: 20px; }
         .modal-content { background: #0a0a0a; width: 90%; max-width: 380px; margin: auto; padding: 22px; border-radius: 25px; border: 1px solid #222; box-sizing: border-box; max-height: 90vh; overflow-y: auto; }
         h2 { color: var(--gold); font-family: 'Orbitron', sans-serif; font-size: 16px; margin-bottom: 20px; text-align: center; }
         
         label { color: var(--gold); font-size: 9px; font-weight: 700; display: block; margin-top: 15px; text-transform: uppercase; }
-        input { width: 100%; padding: 12px; margin-top: 5px; background: #151515; border: 1px solid #333; border-radius: 10px; color: #fff; box-sizing: border-box; font-size: 14px; }
+        input, textarea { width: 100%; padding: 12px; margin-top: 5px; background: #151515; border: 1px solid #333; border-radius: 10px; color: #fff; box-sizing: border-box; font-size: 14px; font-family: inherit; outline: none; }
+        input:focus { border-color: var(--gold); }
         
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .day-item { font-size: 9px; padding: 10px 2px; background: #151515; border: 1px solid #222; border-radius: 10px; text-align: center; cursor: pointer; color: #555; }
         .day-item.active { background: var(--gold-grad); color: #000; font-weight: bold; }
-
-        #ver-tag { text-align: center; color: #222; font-size: 8px; margin-top: 20px; }
+        #ver-tag { text-align: center; color: #222; font-size: 8px; margin-top: 20px; letter-spacing: 2px; }
     </style>
 </head>
 <body>
 
     <div class="status-bar">
         <div class="dot" id="status-dot"></div>
-        <span id="status-text">Sistema Diamond Ativo</span>
+        <span id="status-text">...</span>
     </div>
 
-    <div class="header"><h1>PONTO ELITE <span style="font-weight:300">DIAMOND V24</span></h1></div>
+    <div class="header"><h1>PONTO ELITE <span style="font-weight:300">DIAMOND V27</span></h1></div>
 
-    <!-- Dashboard Financeiro Explicativo -->
     <div class="dashboard">
-        <div class="dash-card"><span>Valor Diárias</span><b id="dash-bruto">R$ 0,00</b></div>
+        <div class="dash-card"><span>Salário Base</span><b id="dash-bruto">R$ 0,00</b></div>
         <div class="dash-card"><span>Valor Extras</span><b id="dash-extras-val">R$ 0,00</b></div>
         <div class="dash-card"><span>Total Vales</span><b id="dash-vales" style="color:#ff3b30">R$ 0,00</b></div>
-        <div class="dash-card"><span>Horas Extras</span><b id="dash-extras-hrs">0.00h</b></div>
-        <div class="dash-card dash-full"><span>TOTAL A RECEBER (LÍQUIDO)</span><b id="dash-liquido">R$ 0,00</b></div>
+        <div class="dash-card"><span>Tempo Extra</span><b id="dash-extras-hrs">0.00h</b></div>
+        <div class="dash-card dash-full"><span>SALDO LÍQUIDO DISPONÍVEL</span><b id="dash-liquido">R$ 0,00</b></div>
     </div>
 
     <div class="clock-box"><div id="clock">00:00:00</div></div>
@@ -77,25 +76,35 @@
         
         <div class="grid-2">
             <button class="btn btn-outline" style="color:#5af" onclick="abrirModal('modal-retro')">✎ Retroativo</button>
-            <button class="btn btn-outline" style="color:#f90" onclick="abrirModal('modal-limpeza')">✅ Liquidar Pág.</button>
+            <button class="btn btn-outline" style="color:#4cd964" onclick="abrirModal('modal-limpeza')">✅ Liquidar</button>
         </div>
 
         <button class="btn btn-outline" onclick="abrirModal('modal-vale')">💰 Registrar Vale</button>
         
         <div class="grid-2">
-            <button class="btn btn-outline" onclick="gerarPDF()">📄 Gerar Folha PDF</button>
+            <button class="btn btn-outline" onclick="gerarPDF()">📄 Gerar PDF</button>
             <button class="btn btn-outline" onclick="abrirModal('modal-config')">⚙ Ajustes</button>
         </div>
     </div>
 
-    <!-- MODAL LIQUIDAÇÃO (ZERAR POR DATA) -->
+    <!-- MODAL JUSTIFICATIVA INTELIGENTE -->
+    <div id="modal-justificativa" class="modal">
+        <div class="modal-content">
+            <h2 id="just-titulo">Justificativa Necessária</h2>
+            <p id="just-sub" style="font-size:11px; color:#888; text-align:center"></p>
+            <textarea id="just-texto" placeholder="Descreva o motivo (Ex: Pedido da gerência, trânsito, adiantamento de carga...)" rows="3"></textarea>
+            <button class="btn btn-gold" style="margin-top:15px" onclick="salvarJustificativa()">Confirmar e Salvar</button>
+        </div>
+    </div>
+
+    <!-- MODAL LIQUIDAÇÃO COM AUTO-EMAIL -->
     <div id="modal-limpeza" class="modal">
         <div class="modal-content">
             <h2>Liquidar Período</h2>
-            <p style="font-size:11px; color:#888; text-align:center">Use isto quando receber o pagamento. Escolha a data de fechamento e o app apagará tudo que ficou para trás.</p>
-            <label>Apagar registros até o dia:</label>
+            <p style="font-size:11px; color:#888; text-align:center">Ao liquidar, o app enviará o resumo final para seu e-mail e apagará os dados antigos para o novo mês.</p>
+            <label>Data de Fechamento:</label>
             <input type="date" id="limpar-ate-data">
-            <button class="btn btn-gold" style="margin-top:20px; background: #ff3b30; color: #fff;" onclick="executarLimpezaData()">Confirmar e Zerar Antigos</button>
+            <button class="btn btn-gold" style="margin-top:20px; background: #2e7d32; color: #fff;" onclick="executarLimpezaData()">Enviar Relatório e Zerar</button>
             <button class="btn btn-outline" style="margin-top:10px" onclick="fecharModais()">Cancelar</button>
         </div>
     </div>
@@ -113,14 +122,15 @@
             </div>
             <label>Nome Completo</label><input type="text" id="cfg-nome">
             <label>WhatsApp ou Grupo</label><input type="text" id="cfg-zap">
+            <label>E-mail p/ Relatórios</label><input type="email" id="cfg-email">
             <label>Valor Diária (R$)</label><input type="number" id="cfg-diaria">
-            <label>Horários Padrão</label>
+            <label>Horários Oficiais</label>
             <div class="grid-2">
                 <input type="time" id="cfg-h1"> <input type="time" id="cfg-h2">
                 <input type="time" id="cfg-h3"> <input type="time" id="cfg-h4">
             </div>
             <button class="btn btn-gold" style="margin-top:20px" onclick="salvarConfig()">Salvar</button>
-            <button class="btn btn-outline" style="color:#ff3b30; border-color:#300" onclick="limparTudo()">Resetar Tudo</button>
+            <button class="btn btn-outline" style="color:#ff3b30; border-color:#300" onclick="limparTudo()">Apagar Tudo</button>
             <button class="btn btn-outline" onclick="fecharModais()">Sair</button>
         </div>
     </div>
@@ -134,8 +144,10 @@
                 <input type="time" id="retro-h1"> <input type="time" id="retro-h2">
                 <input type="time" id="retro-h3"> <input type="time" id="retro-h4">
             </div>
-            <label>Senha Master (1801)</label><input type="password" id="retro-pass" placeholder="Senha">
-            <button class="btn btn-gold" style="margin-top:15px" onclick="salvarRetro()">Gravar Dia</button>
+            <label>Nota do Dia</label>
+            <input type="text" id="retro-just" placeholder="Ex: Esqueci o celular em casa">
+            <label>Senha Master (1801)</label><input type="password" id="retro-pass">
+            <button class="btn btn-gold" style="margin-top:15px" onclick="salvarRetro()">Gravar</button>
             <button class="btn btn-outline" onclick="fecharModais()">Cancelar</button>
         </div>
     </div>
@@ -151,36 +163,34 @@
         </div>
     </div>
 
-    <div id="ver-tag">DIAMOND EDITION V24.0 • SISTEMA DE LIQUIDAÇÃO ATIVO</div>
+    <div id="ver-tag">DIAMOND ULTRA PRO V27.0 • HAPTIC FEEDBACK ACTIVE</div>
 
     <script>
-        const KEY_REGS = "ELITE_REGS_V24"; 
-        const KEY_CFG = "ELITE_CFG_V24"; 
-        const KEY_VALES = "ELITE_VALES_V24";
+        const KEY_REGS = "ELITE_REGS_V27"; 
+        const KEY_CFG = "ELITE_CFG_V27"; 
+        const KEY_VALES = "ELITE_VALES_V27";
 
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js?v=24.0').then(reg => {
-                reg.onupdatefound = () => {
-                    const worker = reg.installing;
-                    worker.onstatechange = () => {
-                        if (worker.state === 'installed' && navigator.serviceWorker.controller) window.location.reload();
-                    };
-                };
-            });
-        }
+        let registroPendenteIndex = null;
 
         window.onload = () => {
             atualizarStatus();
             setInterval(() => document.getElementById('clock').innerText = new Date().toLocaleTimeString('pt-BR'), 1000);
-            document.querySelectorAll('.day-item').forEach(el => el.onclick = () => el.classList.toggle('active'));
+            document.querySelectorAll('.day-item').forEach(el => el.onclick = () => {
+                vibrar();
+                el.classList.toggle('active');
+            });
         };
 
+        function vibrar() { if(navigator.vibrate) navigator.vibrate(40); }
+
         function abrirModal(id) {
+            vibrar();
             document.getElementById(id).style.display = 'block';
             const cfg = JSON.parse(localStorage.getItem(KEY_CFG) || "{}");
             if(id === 'modal-config') {
                 document.getElementById('cfg-nome').value = cfg.nome || "";
                 document.getElementById('cfg-zap').value = cfg.zap || "";
+                document.getElementById('cfg-email').value = cfg.email || "";
                 document.getElementById('cfg-diaria').value = cfg.diaria || "";
                 document.getElementById('cfg-h1').value = cfg.h1 || "";
                 document.getElementById('cfg-h2').value = cfg.h2 || "";
@@ -201,36 +211,64 @@
 
         function fecharModais() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
 
-        function salvarConfig() {
-            const dias = []; 
-            document.querySelectorAll('.day-item.active').forEach(el => dias.push(parseInt(el.dataset.day)));
-            const cfg = {
-                nome: document.getElementById('cfg-nome').value, zap: document.getElementById('cfg-zap').value,
-                diaria: parseFloat(document.getElementById('cfg-diaria').value || 0),
-                h1: document.getElementById('cfg-h1').value, h2: document.getElementById('cfg-h2').value,
-                h3: document.getElementById('cfg-h3').value, h4: document.getElementById('cfg-h4').value, dias: dias
-            };
-            localStorage.setItem(KEY_CFG, JSON.stringify(cfg));
-            fecharModais(); atualizarStatus();
-        }
+        function toMin(h) { if(!h || h === "-" || h === "") return 0; const parts = h.split(':'); return (parseInt(parts[0]) * 60) + parseInt(parts[1]); }
 
         function registrarPonto() {
+            vibrar();
             const cfg = JSON.parse(localStorage.getItem(KEY_CFG) || "{}");
             let r = JSON.parse(localStorage.getItem(KEY_REGS) || "[]");
-            const agora = new Date(), hoje = agora.toLocaleDateString('sv-SE');
+            const agora = new Date();
+            const hoje = agora.toLocaleDateString('sv-SE');
             const batidasHoje = r.filter(x => x.data === hoje).length;
+            const agoraMin = (agora.getHours() * 60) + agora.getMinutes();
 
-            if (batidasHoje === 3) {
-                const [hCfg, mCfg] = (cfg.h4 || "17:00").split(':').map(Number);
-                const limite = new Date(); limite.setHours(hCfg, mCfg, 0);
-                if (agora < limite && !confirm("Horário de término oficial ainda não atingido. Encerrar?")) return;
+            let precisaJustificar = false;
+            let subTexto = "";
+
+            // Lógica Inteligente de Justificativa
+            if (batidasHoje === 0) { // Entrada
+                const h1Min = toMin(cfg.h1);
+                if (agoraMin < h1Min) {
+                    precisaJustificar = true;
+                    subTexto = `Você está entrando cedo (${agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}). O oficial é ${cfg.h1}.`;
+                }
+            } else if (batidasHoje === 3) { // Saída
+                const h4Min = toMin(cfg.h4);
+                if (agoraMin > h4Min) {
+                    precisaJustificar = true;
+                    subTexto = `Você está saindo tarde (${agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}). O oficial é ${cfg.h4}.`;
+                }
             }
 
-            const novo = { data: hoje, hora: agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}), ts: agora.getTime() };
-            r.push(novo); localStorage.setItem(KEY_REGS, JSON.stringify(r));
+            const novo = { data: hoje, hora: agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}), ts: agora.getTime(), just: "" };
+            r.push(novo); 
+            registroPendenteIndex = r.length - 1;
+            localStorage.setItem(KEY_REGS, JSON.stringify(r));
+            
             const tipos = ["INÍCIO", "ALMOÇO (S)", "ALMOÇO (V)", "ENCERRAMENTO"];
             enviarZap(novo.hora, tipos[batidasHoje] || "EXTRA");
             atualizarStatus();
+
+            if (precisaJustificar) {
+                document.getElementById('just-sub').innerText = subTexto;
+                document.getElementById('just-texto').value = "";
+                abrirModal('modal-justificativa');
+            } else {
+                alert("Ponto batido: " + novo.hora);
+            }
+        }
+
+        function salvarJustificativa() {
+            vibrar();
+            let r = JSON.parse(localStorage.getItem(KEY_REGS) || "[]");
+            const texto = document.getElementById('just-texto').value;
+            if (!texto) return alert("Por favor, digite o motivo.");
+            if (registroPendenteIndex !== null && r[registroPendenteIndex]) {
+                r[registroPendenteIndex].just = texto;
+                localStorage.setItem(KEY_REGS, JSON.stringify(r));
+            }
+            fecharModais();
+            alert("Justificativa registrada.");
         }
 
         function atualizarStatus() {
@@ -240,7 +278,6 @@
             const hoje = new Date().toLocaleDateString('sv-SE');
             const batidas = regs.filter(r => r.data === hoje).length;
 
-            // CALCULOS DASHBOARD
             const diasAg = {}; regs.forEach(r => { if(!diasAg[r.data]) diasAg[r.data] = []; diasAg[r.data].push(r.hora); });
             const cargaPadraoMin = (toMin(cfg.h2)-toMin(cfg.h1)) + (toMin(cfg.h4)-toMin(cfg.h3));
             let tExMin = 0; let tVales = 0;
@@ -270,70 +307,80 @@
         }
 
         function executarLimpezaData() {
+            vibrar();
+            const cfg = JSON.parse(localStorage.getItem(KEY_CFG) || "{}");
             const dataLimite = document.getElementById('limpar-ate-data').value;
-            if(!dataLimite) return alert("Selecione uma data.");
-            if(!confirm("Isso apagará permanentemente todos os registros (ponto e vales) anteriores e incluindo esta data. Continuar?")) return;
+            if(!dataLimite) return alert("Selecione a data.");
+            
+            // Gerar resumo para o e-mail
+            const liquido = document.getElementById('dash-liquido').innerText;
+            const extras = document.getElementById('dash-extras-hrs').innerText;
+            const vales = document.getElementById('dash-vales').innerText;
 
-            const regs = JSON.parse(localStorage.getItem(KEY_REGS) || "[]");
-            const vales = JSON.parse(localStorage.getItem(KEY_VALES) || "[]");
+            const assunto = encodeURIComponent(`FECHAMENTO DE PONTO - ${cfg.nome}`);
+            const corpo = encodeURIComponent(`RELATÓRIO DE LIQUIDAÇÃO\n------------------------\nColaborador: ${cfg.nome}\nData de Corte: ${dataLimite}\n\nRESUMO FINANCEIRO:\n(+) Diárias Acumuladas: ${document.getElementById('dash-bruto').innerText}\n(+) Horas Extras: ${extras} (Valor: ${document.getElementById('dash-extras-val').innerText})\n(-) Vales Retirados: ${vales}\n------------------------\nSALDO LÍQUIDO PAGO: ${liquido}\n\nEnviado via Ponto Elite Diamond.`);
 
-            const novosRegs = regs.filter(r => r.data > dataLimite);
-            const novosVales = vales.filter(v => v.data > dataLimite);
+            if (cfg.email) {
+                window.location.href = `mailto:${cfg.email}?subject=${assunto}&body=${corpo}`;
+            }
 
-            localStorage.setItem(KEY_REGS, JSON.stringify(novosRegs));
-            localStorage.setItem(KEY_VALES, JSON.stringify(novosVales));
-
-            alert("Período liquidado! Histórico antigo removido.");
-            fecharModais();
-            atualizarStatus();
+            setTimeout(() => {
+                if(confirm("O e-mail foi preparado. Deseja APAGAR os registros agora?")) {
+                    const regs = JSON.parse(localStorage.getItem(KEY_REGS) || "[]");
+                    const valesList = JSON.parse(localStorage.getItem(KEY_VALES) || "[]");
+                    localStorage.setItem(KEY_REGS, JSON.stringify(regs.filter(r => r.data > dataLimite)));
+                    localStorage.setItem(KEY_VALES, JSON.stringify(valesList.filter(v => v.data > dataLimite)));
+                    alert("Sistema liquidado!");
+                    fecharModais();
+                    atualizarStatus();
+                }
+            }, 1000);
         }
-
-        function salvarRetro() {
-            if(document.getElementById('retro-pass').value !== "1801") return alert("Senha Errada");
-            const data = document.getElementById('retro-data').value;
-            let r = JSON.parse(localStorage.getItem(KEY_REGS) || "[]");
-            [document.getElementById('retro-h1').value, document.getElementById('retro-h2').value, document.getElementById('retro-h3').value, document.getElementById('retro-h4').value].forEach(h => {
-                if(h) r.push({ data: data, hora: h, ts: new Date(data + "T" + h).getTime() });
-            });
-            localStorage.setItem(KEY_REGS, JSON.stringify(r));
-            fecharModais(); atualizarStatus();
-        }
-
-        function salvarVale() {
-            const v = parseFloat(document.getElementById('vale-valor').value || 0), d = document.getElementById('vale-data').value;
-            if(!v || !d) return alert("Erro");
-            let vales = JSON.parse(localStorage.getItem(KEY_VALES) || "[]");
-            vales.push({ valor: v, data: d });
-            localStorage.setItem(KEY_VALES, JSON.stringify(vales));
-            fecharModais(); atualizarStatus();
-        }
-
-        function toMin(h) { if(!h || h === "-" || h === "") return 0; const parts = h.split(':'); return (parseInt(parts[0]) * 60) + parseInt(parts[1]); }
 
         async function gerarPDF() {
+            vibrar();
             const { jsPDF } = window.jspdf; const doc = new jsPDF();
             const cfg = JSON.parse(localStorage.getItem(KEY_CFG) || "{}");
             const regs = JSON.parse(localStorage.getItem(KEY_REGS) || "[]");
             const vales = JSON.parse(localStorage.getItem(KEY_VALES) || "[]");
 
             doc.setFillColor(20, 20, 20); doc.rect(0, 0, 210, 40, 'F');
-            doc.setTextColor(212, 175, 55); doc.setFontSize(22); doc.text("FOLHA DE PONTO DIAMOND PRO", 105, 20, {align:'center'});
-            doc.setTextColor(150, 150, 150); doc.setFontSize(10); doc.text(`COLABORADOR: ${cfg.nome || 'NÃO IDENTIFICADO'}`, 105, 30, {align:'center'});
+            doc.setTextColor(212, 175, 55); doc.setFontSize(22); doc.text("PONTO DIAMOND PRO", 105, 20, {align:'center'});
+            doc.setTextColor(150, 150, 150); doc.setFontSize(10); doc.text(`EXTRATO DE: ${cfg.nome || 'USUÁRIO'}`, 105, 30, {align:'center'});
 
-            const diasAg = {}; regs.forEach(r => { if(!diasAg[r.data]) diasAg[r.data] = []; diasAg[r.data].push(r.hora); });
+            const diasAg = {}; 
+            const observacoes = {};
+            regs.forEach(r => { 
+                if(!diasAg[r.data]) diasAg[r.data] = []; 
+                diasAg[r.data].push(r.hora); 
+                if(r.just) {
+                    if(!observacoes[r.data]) observacoes[r.data] = [];
+                    observacoes[r.data].push(r.just);
+                }
+            });
+
             const cargaPadraoMin = (toMin(cfg.h2)-toMin(cfg.h1)) + (toMin(cfg.h4)-toMin(cfg.h3));
             let tExMin = 0;
             
             const rows = Object.keys(diasAg).sort().map(d => {
-                const p = diasAg[d].sort(); const h1 = p[0]||"-", h2 = p[1]||"-", h3 = p[2]||"-", h4 = p[3]||"-";
-                const trab = (toMin(h2)-toMin(h1)) + (toMin(h4)-toMin(h3));
-                const eTrabalho = (cfg.dias || []).includes(new Date(d + "T12:00:00").getDay());
-                let ex = (!eTrabalho) ? trab : (trab > cargaPadraoMin ? trab - cargaPadraoMin : 0);
-                tExMin += ex;
-                return [d.split('-').reverse().join('/'), h1, h2, h3, h4, (ex/60).toFixed(2)+'h'];
+                const p = diasAg[d].sort(); 
+                const h1 = p[0]||"-", h2 = p[1]||"-", h3 = p[2]||"-", h4 = p[3]||"-";
+                const trabalhado = (toMin(h2)-toMin(h1)) + (toMin(h4)-toMin(h3));
+                const diaSemana = new Date(d + "T12:00:00").getDay(); 
+                const eTrabalho = (cfg.dias || []).includes(diaSemana);
+                let extra = (!eTrabalho) ? trabalhado : (trabalhado > cargaPadraoMin ? trabalhado - cargaPadraoMin : 0);
+                tExMin += extra;
+                const obs = observacoes[d] ? observacoes[d].join(" | ") : "-";
+                return [d.split('-').reverse().join('/'), h1, h2, h3, h4, (extra/60).toFixed(2)+'h', obs];
             });
 
-            doc.autoTable({ startY: 45, head: [['DATA', 'ENTRADA', 'ALM. S', 'ALM. V', 'SAÍDA', 'EXTRAS']], body: rows, headStyles: { fillColor: [212, 175, 55], textColor: 0 } });
+            doc.autoTable({ 
+                startY: 45, 
+                head: [['DATA', 'ENT', 'ALM S', 'ALM V', 'SAÍ', 'EXTRA', 'JUSTIFICATIVA']], 
+                body: rows, 
+                headStyles: { fillColor: [212, 175, 55], textColor: 0 },
+                columnStyles: { 6: { cellWidth: 40 } } 
+            });
 
             let tVales = 0; vales.forEach(v => tVales += v.valor);
             const vDiarias = Object.keys(diasAg).length * (cfg.diaria || 0);
@@ -341,27 +388,58 @@
 
             doc.setTextColor(0); doc.setFontSize(12);
             let finalY = doc.lastAutoTable.finalY + 15;
-            doc.text(`DETALHAMENTO FINANCEIRO:`, 14, finalY);
-            doc.setFontSize(10);
-            doc.text(`(+) Salário Diárias (${Object.keys(diasAg).length}): R$ ${vDiarias.toFixed(2)}`, 14, finalY + 8);
-            doc.text(`(+) Salário Extras (${(tExMin/60).toFixed(2)}h): R$ ${vExtras.toFixed(2)}`, 14, finalY + 14);
-            doc.setTextColor(200, 0, 0); doc.text(`(-) Desconto de Vales: R$ ${tVales.toFixed(2)}`, 14, finalY + 20);
-            doc.setTextColor(0); doc.setFontSize(14); doc.setFont(undefined, 'bold');
-            doc.text(`TOTAL LÍQUIDO: R$ ${(vDiarias + vExtras - tVales).toFixed(2)}`, 14, finalY + 32);
+            doc.text(`DETALHAMENTO: Diárias: R$ ${vDiarias.toFixed(2)} | Extras: R$ ${vExtras.toFixed(2)} | Vales: R$ ${tVales.toFixed(2)}`, 14, finalY);
+            doc.setFontSize(14); doc.setFont(undefined, 'bold');
+            doc.text(`TOTAL LÍQUIDO: R$ ${(vDiarias + vExtras - tVales).toFixed(2)}`, 14, finalY + 12);
 
-            const randomID = Math.floor(1000 + Math.random() * 9000);
-            doc.save(`PONTO_${(cfg.nome || 'ELITE').replace(/\s+/g, '_')}_#${randomID}.pdf`);
+            doc.save(`DIAMOND_#${Math.floor(Math.random()*9000)}.pdf`);
+        }
+
+        function salvarConfig() {
+            vibrar();
+            const dias = []; document.querySelectorAll('.day-item.active').forEach(el => dias.push(parseInt(el.dataset.day)));
+            const cfg = {
+                nome: document.getElementById('cfg-nome').value, zap: document.getElementById('cfg-zap').value,
+                email: document.getElementById('cfg-email').value,
+                diaria: parseFloat(document.getElementById('cfg-diaria').value || 0),
+                h1: document.getElementById('cfg-h1').value, h2: document.getElementById('cfg-h2').value,
+                h3: document.getElementById('cfg-h3').value, h4: document.getElementById('cfg-h4').value, dias: dias
+            };
+            localStorage.setItem(KEY_CFG, JSON.stringify(cfg));
+            fecharModais(); atualizarStatus();
+        }
+
+        function salvarRetro() {
+            vibrar();
+            if(document.getElementById('retro-pass').value !== "1801") return alert("Senha Errada");
+            const data = document.getElementById('retro-data').value;
+            let r = JSON.parse(localStorage.getItem(KEY_REGS) || "[]");
+            [document.getElementById('retro-h1').value, document.getElementById('retro-h2').value, document.getElementById('retro-h3').value, document.getElementById('retro-h4').value].forEach((h, i) => {
+                if(h) r.push({ data: data, hora: h, ts: new Date(data + "T" + h).getTime(), just: (i===0 ? document.getElementById('retro-just').value : "") });
+            });
+            localStorage.setItem(KEY_REGS, JSON.stringify(r));
+            fecharModais(); atualizarStatus();
+        }
+
+        function salvarVale() {
+            vibrar();
+            const v = parseFloat(document.getElementById('vale-valor').value || 0), d = document.getElementById('vale-data').value;
+            if(!v || !d) return;
+            let vales = JSON.parse(localStorage.getItem(KEY_VALES) || "[]");
+            vales.push({ valor: v, data: d });
+            localStorage.setItem(KEY_VALES, JSON.stringify(vales));
+            fecharModais(); atualizarStatus();
         }
 
         function enviarZap(hora, tipo) {
             const cfg = JSON.parse(localStorage.getItem(KEY_CFG) || "{}");
             if(!cfg.zap) return;
-            const msg = window.encodeURIComponent(`*DIAMOND PONTO PRO*\n📌 *Status:* ${tipo}\n⏰ *Hora:* ${hora}\n📅 *Data:* ${new Date().toLocaleDateString('pt-BR')}`);
-            if(cfg.zap.includes("http")) { window.open(cfg.zap); } 
-            else { window.open(`https://wa.me/${cfg.zap}?text=${msg}`); }
+            const msg = window.encodeURIComponent(`*DIAMOND PONTO*\n📌 *Status:* ${tipo}\n⏰ *Hora:* ${hora}\n📅 *Data:* ${new Date().toLocaleDateString('pt-BR')}`);
+            if(cfg.zap.includes("http")) window.open(cfg.zap);
+            else window.open(`https://wa.me/${cfg.zap}?text=${msg}`);
         }
 
-        function limparTudo() { if(confirm("Deseja apagar TUDO?")) { localStorage.clear(); location.reload(); } }
+        function limparTudo() { if(confirm("Apagar TUDO?")) { localStorage.clear(); location.reload(); } }
     </script>
 </body>
 </html>
